@@ -1,0 +1,8 @@
+# 利用率预警参数（SPEC M6）
+series_days: 180            # 合成遥测时长（天）
+low_threshold: 0.10         # 利用率低于此值视为闲置
+low_days: 14                # 连续 N 天低于 low_threshold → 红色 long_idle
+mid_threshold: 0.30         # 连续 mid_days 低于此值 → 黄色 long_idle
+mid_days: 30
+drop_ratio: 0.5             # 周环比骤降超过 50% → 橙色 sudden_drop
+rent_interval_days: 30      # 租金支付节奏（计算 "T-N 天预警" 提前量）

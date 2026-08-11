@@ -1,0 +1,1171 @@
+{
+  "run_mode": "mock",
+  "baseline_version": "v1-fixed-2026-08-11",
+  "cases": 100,
+  "extraction_accuracy": 1.0,
+  "extraction_fields": "3260/3260",
+  "verification_f1": 1.0,
+  "verification_cm": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "fpr": 0.0,
+    "tp": 30,
+    "fp": 0,
+    "fn": 0,
+    "tn": 70
+  },
+  "fraud_recall": 1.0,
+  "fraud_fpr": 0.0,
+  "fraud_cm": {
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "fpr": 0.0,
+    "tp": 30,
+    "fp": 0,
+    "fn": 0,
+    "tn": 70
+  },
+  "rule_accuracy": 1.0,
+  "evidence_coverage": 1.0,
+  "evidence_fields": "940/940",
+  "adversarial_rate": 1.0,
+  "case_seconds_avg": 0.214,
+  "case_seconds_max": 0.28,
+  "system_llm_tokens": 0,
+  "system_cost_yuan_total": 0.0,
+  "system_cost_yuan_per_case": 0.0,
+  "price_per_1k_tokens": 0.0,
+  "baseline": {
+    "type": "mock_keywords",
+    "recall": 0.3333,
+    "fpr": 0.0,
+    "cm": {
+      "precision": 1.0,
+      "recall": 0.3333,
+      "f1": 0.5,
+      "fpr": 0.0,
+      "tp": 10,
+      "fp": 0,
+      "fn": 20,
+      "tn": 70
+    },
+    "tokens": 0
+  },
+  "ablation_lift_pp": 66.7,
+  "pattern_recall": {
+    "a_chengxing": {
+      "n": 10,
+      "system_recall": 1.0,
+      "baseline_recall": 0.0
+    },
+    "b_multi_pledge": {
+      "n": 10,
+      "system_recall": 1.0,
+      "baseline_recall": 0.0
+    },
+    "c_circular_trade": {
+      "n": 10,
+      "system_recall": 1.0,
+      "baseline_recall": 1.0
+    }
+  },
+  "baseline_errors": [],
+  "per_case": {
+    "case_0001": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.28,
+      "errors": []
+    },
+    "case_0002": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.168,
+      "errors": []
+    },
+    "case_0003": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.17,
+      "errors": []
+    },
+    "case_0004": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.163,
+      "errors": []
+    },
+    "case_0005": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.157,
+      "errors": []
+    },
+    "case_0006": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.166,
+      "errors": []
+    },
+    "case_0007": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.165,
+      "errors": []
+    },
+    "case_0008": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.165,
+      "errors": []
+    },
+    "case_0009": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.156,
+      "errors": []
+    },
+    "case_0010": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.161,
+      "errors": []
+    },
+    "case_0011": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.16,
+      "errors": []
+    },
+    "case_0012": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.168,
+      "errors": []
+    },
+    "case_0013": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 19.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.16,
+      "errors": []
+    },
+    "case_0014": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.168,
+      "errors": []
+    },
+    "case_0015": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.164,
+      "errors": []
+    },
+    "case_0016": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.164,
+      "errors": []
+    },
+    "case_0017": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.185,
+      "errors": []
+    },
+    "case_0018": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.214,
+      "errors": []
+    },
+    "case_0019": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0020": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.217,
+      "errors": []
+    },
+    "case_0021": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.216,
+      "errors": []
+    },
+    "case_0022": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.214,
+      "errors": []
+    },
+    "case_0023": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.234,
+      "errors": []
+    },
+    "case_0024": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.216,
+      "errors": []
+    },
+    "case_0025": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.212,
+      "errors": []
+    },
+    "case_0026": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.228,
+      "errors": []
+    },
+    "case_0027": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.214,
+      "errors": []
+    },
+    "case_0028": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.21,
+      "errors": []
+    },
+    "case_0029": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 19.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.225,
+      "errors": []
+    },
+    "case_0030": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.222,
+      "errors": []
+    },
+    "case_0031": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.209,
+      "errors": []
+    },
+    "case_0032": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 68.75,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.215,
+      "errors": []
+    },
+    "case_0033": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.207,
+      "errors": []
+    },
+    "case_0034": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.214,
+      "errors": []
+    },
+    "case_0035": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.204,
+      "errors": []
+    },
+    "case_0036": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.202,
+      "errors": []
+    },
+    "case_0037": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0038": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.231,
+      "errors": []
+    },
+    "case_0039": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.21,
+      "errors": []
+    },
+    "case_0040": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0041": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 94.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.221,
+      "errors": []
+    },
+    "case_0042": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.234,
+      "errors": []
+    },
+    "case_0043": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.211,
+      "errors": []
+    },
+    "case_0044": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 19.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.212,
+      "errors": []
+    },
+    "case_0045": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.223,
+      "errors": []
+    },
+    "case_0046": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.21,
+      "errors": []
+    },
+    "case_0047": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.21,
+      "errors": []
+    },
+    "case_0048": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.221,
+      "errors": []
+    },
+    "case_0049": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.223,
+      "errors": []
+    },
+    "case_0050": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.209,
+      "errors": []
+    },
+    "case_0051": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 68.75,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.229,
+      "errors": []
+    },
+    "case_0052": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 74.75,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.238,
+      "errors": []
+    },
+    "case_0053": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.223,
+      "errors": []
+    },
+    "case_0054": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.234,
+      "errors": []
+    },
+    "case_0055": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0056": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.223,
+      "errors": []
+    },
+    "case_0057": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.213,
+      "errors": []
+    },
+    "case_0058": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.209,
+      "errors": []
+    },
+    "case_0059": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.24,
+      "errors": []
+    },
+    "case_0060": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.259,
+      "errors": []
+    },
+    "case_0061": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.219,
+      "errors": []
+    },
+    "case_0062": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.226,
+      "errors": []
+    },
+    "case_0063": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 14.5,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.23,
+      "errors": []
+    },
+    "case_0064": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.208,
+      "errors": []
+    },
+    "case_0065": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0066": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.214,
+      "errors": []
+    },
+    "case_0067": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.217,
+      "errors": []
+    },
+    "case_0068": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.235,
+      "errors": []
+    },
+    "case_0069": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.218,
+      "errors": []
+    },
+    "case_0070": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.231,
+      "errors": []
+    },
+    "case_0071": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.222,
+      "errors": []
+    },
+    "case_0072": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.221,
+      "errors": []
+    },
+    "case_0073": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 68.75,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.217,
+      "errors": []
+    },
+    "case_0074": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.221,
+      "errors": []
+    },
+    "case_0075": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 19.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.233,
+      "errors": []
+    },
+    "case_0076": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.232,
+      "errors": []
+    },
+    "case_0077": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.221,
+      "errors": []
+    },
+    "case_0078": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.229,
+      "errors": []
+    },
+    "case_0079": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.248,
+      "errors": []
+    },
+    "case_0080": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0081": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.211,
+      "errors": []
+    },
+    "case_0082": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.247,
+      "errors": []
+    },
+    "case_0083": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.222,
+      "errors": []
+    },
+    "case_0084": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.231,
+      "errors": []
+    },
+    "case_0085": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.23,
+      "errors": []
+    },
+    "case_0086": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 19.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.214,
+      "errors": []
+    },
+    "case_0087": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 94.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.227,
+      "errors": []
+    },
+    "case_0088": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.222,
+      "errors": []
+    },
+    "case_0089": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.236,
+      "errors": []
+    },
+    "case_0090": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.224,
+      "errors": []
+    },
+    "case_0091": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.242,
+      "errors": []
+    },
+    "case_0092": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.215,
+      "errors": []
+    },
+    "case_0093": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.228,
+      "errors": []
+    },
+    "case_0094": {
+      "is_fraud": true,
+      "fraud_pattern": "b_multi_pledge",
+      "score": 91.0,
+      "grade": "reject",
+      "verify_failed": 2,
+      "rules": [
+        "R77-003",
+        "R77-005"
+      ],
+      "elapsed": 0.227,
+      "errors": []
+    },
+    "case_0095": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 68.75,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.226,
+      "errors": []
+    },
+    "case_0096": {
+      "is_fraud": true,
+      "fraud_pattern": "a_chengxing",
+      "score": 60.0,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.239,
+      "errors": []
+    },
+    "case_0097": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.22,
+      "errors": []
+    },
+    "case_0098": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 25.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.259,
+      "errors": []
+    },
+    "case_0099": {
+      "is_fraud": true,
+      "fraud_pattern": "c_circular_trade",
+      "score": 68.75,
+      "grade": "review",
+      "verify_failed": 1,
+      "rules": [
+        "R77-003"
+      ],
+      "elapsed": 0.228,
+      "errors": []
+    },
+    "case_0100": {
+      "is_fraud": false,
+      "fraud_pattern": null,
+      "score": 10.0,
+      "grade": "pass",
+      "verify_failed": 0,
+      "rules": [],
+      "elapsed": 0.233,
+      "errors": []
+    }
+  },
+  "targets": {
+    "extraction_accuracy": 0.95,
+    "verification_f1": 0.9,
+    "fraud_recall": 0.9,
+    "fraud_fpr_max": 0.1,
+    "rule_accuracy": 1.0,
+    "evidence_coverage": 0.98,
+    "adversarial_rate": 1.0,
+    "case_seconds_max": 180.0,
+    "cost_per_case_max": 0.5,
+    "ablation_lift_min": 15.0
+  },
+  "passed": {
+    "extraction_accuracy": true,
+    "verification_f1": true,
+    "fraud_recall": true,
+    "fraud_fpr": true,
+    "rule_accuracy": true,
+    "evidence_coverage": true,
+    "adversarial_rate": true,
+    "case_seconds": true,
+    "cost_per_case": true,
+    "ablation_lift": true
+  }
+}

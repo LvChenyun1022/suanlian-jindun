@@ -1,0 +1,13 @@
+# suanlian-jindun 核心依赖（必需）
+pydantic>=2.5
+streamlit>=1.30
+pymupdf>=1.24
+pdfplumber>=0.11
+reportlab>=4.0
+faker>=22.0
+pytest>=8.0
+python-dotenv>=1.0
+pyyaml>=6.0
+openai>=1.10
+pandas>=2.1
+httpx>=0.26

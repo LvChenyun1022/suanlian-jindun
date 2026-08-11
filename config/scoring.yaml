@@ -1,0 +1,20 @@
+# 风险评分权重与路由（SPEC M7）
+# 总分 = Σ(weight × raw) × 100，权重合计必须为 1.0；同输入同输出、可复算。
+weights:
+  verification: 0.40        # 三单核验
+  rules: 0.35               # 77号文规则命中
+  stress: 0.10              # 残值与现金流压力测试
+  utilization: 0.15         # 利用率预警
+raw:
+  verification_per_fail: 0.5   # raw = min(1, 失败项数 × 0.5)
+  severity: {block: 1.0, high: 0.85, medium: 0.5, low: 0.25}   # 规则 raw 取最高严重度，每多一条 +0.05，封顶 1.0
+  extra_rule_bonus: 0.05
+  alert_level: {red: 1.0, orange: 0.6, yellow: 0.3}            # 预警 raw 取最高级别
+  stress_breach: {extreme: 1.0, stress: 0.7, base: 0.4}        # 取最严重突破情景
+# 红线兜底：严重规则命中直接抬升总分下限（一票进入人审/拒绝）
+overrides:
+  high_min_score: 60        # 任一 high 命中 → 总分不低于 60（强制人工复核）
+  block_min_score: 91       # 任一 block 命中 → 总分不低于 91（>90，建议拒绝）
+routes:
+  pass_max: 60              # < 60 建议通过
+  review_max: 90            # 60–90 强制"待人工复核"（不得自动放行）；> 90 建议拒绝

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8">
+<title>证据链报告</title>
+<style>
+body { font-family: "Microsoft YaHei", sans-serif; max-width: 960px; margin: 24px auto; padding: 0 16px; color: #222; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th, td { border: 1px solid #ccc; padding: 4px 8px; text-align: left; }
+th { background: #f2f4f8; }
+h1, h2 { border-bottom: 2px solid #e0e0e0; padding-bottom: 4px; }
+blockquote { color: #666; border-left: 4px solid #ddd; margin: 0; padding-left: 12px; }
+</style></head><body>
+<p>【AI 生成内容 · 合成演示数据，不构成任何授信/投资建议】</p>
+<h1>证据链报告 — case_0090</h1>
+<blockquote>
+<p>生成时间：2026-08-11T08:09:42.724142+00:00 ｜ 运行模式：mock
+本系统为合成数据演示，全部主体/单据均为虚构，不构成授信/投资建议。</p>
+</blockquote>
+<h2>风险评分：25.0 / 100 → <strong>建议通过</strong></h2>
+<table>
+<thead>
+<tr>
+<th>分项</th>
+<th>权重</th>
+<th>原始值</th>
+<th>贡献</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>verification</td>
+<td>0.40</td>
+<td>0.00</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>rules</td>
+<td>0.35</td>
+<td>0.00</td>
+<td>0.0</td>
+</tr>
+<tr>
+<td>stress</td>
+<td>0.10</td>
+<td>1.00</td>
+<td>10.0</td>
+</tr>
+<tr>
+<td>utilization</td>
+<td>0.15</td>
+<td>1.00</td>
+<td>15.0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>路由理由</strong>：压力测试突破阈值情景: stress/extreme；利用率预警 1 条（最高 red）</p>
+<h2>三单核验（通过 9 / 未通过 0）</h2>
+<table>
+<thead>
+<tr>
+<th>核验项</th>
+<th>结论</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>contract_vs_invoice.seller_name</td>
+<td>✅ 通过</td>
+<td>合同卖方「群英网络有限公司」 vs 发票销售方「群英网络有限公司」</td>
+</tr>
+<tr>
+<td>contract_vs_invoice.buyer_name</td>
+<td>✅ 通过</td>
+<td>合同买方「银嘉信息有限公司」 vs 发票购买方「银嘉信息有限公司」</td>
+</tr>
+<tr>
+<td>amount.contract_vs_invoice</td>
+<td>✅ 通过</td>
+<td>合同 1,911,664.60 vs 发票价税合计 1,911,664.60（容差 1.0）</td>
+</tr>
+<tr>
+<td>amount.contract_vs_lease</td>
+<td>✅ 通过</td>
+<td>合同 1,911,664.60 vs 清单总价值 1,911,664.60（容差 1.0）</td>
+</tr>
+<tr>
+<td>invoice.tax_reconciliation</td>
+<td>✅ 通过</td>
+<td>不含税 1,691,738.58 + 税额 219,926.02 vs 价税合计 1,911,664.60</td>
+</tr>
+<tr>
+<td>account_period.consistency</td>
+<td>✅ 通过</td>
+<td>账期 180 天；开票距签订 17 天</td>
+</tr>
+<tr>
+<td>lease.contract_no_link</td>
+<td>✅ 通过</td>
+<td>清单关联合同号「HT-2025-0090」 vs 合同编号「HT-2025-0090」</td>
+</tr>
+<tr>
+<td>cross_case.item_id_duplicate</td>
+<td>✅ 通过</td>
+<td>无跨案件重复租赁物编号</td>
+</tr>
+<tr>
+<td>cross_case.serial_no_duplicate</td>
+<td>✅ 通过</td>
+<td>无跨案件重复序列号</td>
+</tr>
+</tbody>
+</table>
+<h2>规则命中</h2>
+<p>无。</p>
+<h2>残值与现金流压力测试（NVIDIA L40S 48GB PCIe）</h2>
+<table>
+<thead>
+<tr>
+<th>情景</th>
+<th>残值率</th>
+<th>LTV</th>
+<th>DSCR</th>
+<th>突破阈值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>base</td>
+<td>0.20</td>
+<td>0.90</td>
+<td>1.11</td>
+<td>否</td>
+<td>正常回收；月租金 53,102 元，回本 32.4 个月</td>
+</tr>
+<tr>
+<td>stress</td>
+<td>0.18</td>
+<td>0.99</td>
+<td>0.89</td>
+<td>是</td>
+<td>利用率 -20%，租金回收率同步 -20%</td>
+</tr>
+<tr>
+<td>extreme</td>
+<td>0.75</td>
+<td>1.20</td>
+<td>0.77</td>
+<td>是</td>
+<td>单一客户违约（集中度 100%），第 6 个月违约、处置折扣 30%</td>
+</tr>
+</tbody>
+</table>
+<p>回本周期：32.4 个月。</p>
+<h2>利用率预警</h2>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>级别</th>
+<th>窗口</th>
+<th>指标</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>long_idle</td>
+<td>red</td>
+<td>D105-D179</td>
+<td>0.51%</td>
+<td>连续 75 天利用率低于 10%（T-1 天预警）</td>
+</tr>
+</tbody>
+</table>
+<h2>证据链明细（字段级）</h2>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>单据</th>
+<th>页码</th>
+<th>坐标 (pt, 左下原点)</th>
+<th>原文片段</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>contract_no</td>
+<td>contract</td>
+<td>1</td>
+<td>(116,751,186,763)</td>
+<td>合同编号：HT-2025-0090</td>
+</tr>
+<tr>
+<td>sign_date</td>
+<td>contract</td>
+<td>1</td>
+<td>(116,733,169,745)</td>
+<td>签订日期：2025-08-23</td>
+</tr>
+<tr>
+<td>vendor.name</td>
+<td>contract</td>
+<td>1</td>
+<td>(152,715,248,727)</td>
+<td>卖方（出卖人）：群英网络有限公司</td>
+</tr>
+<tr>
+<td>vendor.credit_code</td>
+<td>contract</td>
+<td>1</td>
+<td>(188,697,283,709)</td>
+<td>卖方统一社会信用代码：91************657B</td>
+</tr>
+<tr>
+<td>lessee.name</td>
+<td>contract</td>
+<td>1</td>
+<td>(152,643,248,655)</td>
+<td>买方（买受人）：银嘉信息有限公司</td>
+</tr>
+<tr>
+<td>lessee.credit_code</td>
+<td>contract</td>
+<td>1</td>
+<td>(188,625,286,637)</td>
+<td>买方统一社会信用代码：91************BKS3</td>
+</tr>
+<tr>
+<td>subject</td>
+<td>contract</td>
+<td>1</td>
+<td>(104,571,263,583)</td>
+<td>标的物：NVIDIA L40S 48GB PCIe x 31 台</td>
+</tr>
+<tr>
+<td>total_amount.amount</td>
+<td>contract</td>
+<td>1</td>
+<td>(176,553,249,565)</td>
+<td>合同总金额（含税）：1,911,664.60 元</td>
+</tr>
+<tr>
+<td>account_days</td>
+<td>contract</td>
+<td>1</td>
+<td>(92,535,123,547)</td>
+<td>账期：180 天</td>
+</tr>
+<tr>
+<td>invoice_no</td>
+<td>invoice</td>
+<td>1</td>
+<td>(116,751,160,763)</td>
+<td>发票号码：83713418</td>
+</tr>
+<tr>
+<td>invoice_date</td>
+<td>invoice</td>
+<td>1</td>
+<td>(116,733,169,745)</td>
+<td>开票日期：2025-09-09</td>
+</tr>
+<tr>
+<td>seller.name</td>
+<td>invoice</td>
+<td>1</td>
+<td>(128,715,224,727)</td>
+<td>销售方名称：群英网络有限公司</td>
+</tr>
+<tr>
+<td>buyer.name</td>
+<td>invoice</td>
+<td>1</td>
+<td>(128,697,224,709)</td>
+<td>购买方名称：银嘉信息有限公司</td>
+</tr>
+<tr>
+<td>item_name</td>
+<td>invoice</td>
+<td>1</td>
+<td>(212,679,330,691)</td>
+<td>货物或应税劳务、服务名称：<em>电子设备</em>GPU加速卡</td>
+</tr>
+<tr>
+<td>quantity</td>
+<td>invoice</td>
+<td>1</td>
+<td>(92,661,103,673)</td>
+<td>数量：31</td>
+</tr>
+<tr>
+<td>unit_price</td>
+<td>invoice</td>
+<td>1</td>
+<td>(152,643,197,655)</td>
+<td>单价（不含税）：54,572.21</td>
+</tr>
+<tr>
+<td>amount_excl_tax.amount</td>
+<td>invoice</td>
+<td>1</td>
+<td>(152,625,210,637)</td>
+<td>金额（不含税）：1,691,738.58</td>
+</tr>
+<tr>
+<td>tax_amount.amount</td>
+<td>invoice</td>
+<td>1</td>
+<td>(92,589,142,601)</td>
+<td>税额：219,926.02</td>
+</tr>
+<tr>
+<td>amount_incl_tax.amount</td>
+<td>invoice</td>
+<td>1</td>
+<td>(164,571,237,583)</td>
+<td>价税合计（含税）：1,911,664.60 元</td>
+</tr>
+<tr>
+<td>list_no</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(116,751,161,763)</td>
+<td>清单编号：QD-0090</td>
+</tr>
+<tr>
+<td>contract_no</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(140,733,210,745)</td>
+<td>关联合同编号：HT-2025-0090</td>
+</tr>
+<tr>
+<td>items.delivery_date</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(116,607,169,619)</td>
+<td>交付日期：2025-10-21</td>
+</tr>
+<tr>
+<td>total_value.amount</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(142,625,214,637)</td>
+<td>清单总价值：1,911,664.60 元</td>
+</tr>
+<tr>
+<td>items.0.item_id</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(178,715,231,727)</td>
+<td>租赁物编号（1）：ZL-0090-A</td>
+</tr>
+<tr>
+<td>items.0.model</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(166,697,289,709)</td>
+<td>GPU型号（1）：NVIDIA L40S 48GB PCIe</td>
+</tr>
+<tr>
+<td>items.0.serial_no</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(154,679,221,691)</td>
+<td>序列号（1）：SNXL4PB6N2</td>
+</tr>
+<tr>
+<td>items.0.quantity</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(142,661,153,673)</td>
+<td>数量（1）：31</td>
+</tr>
+<tr>
+<td>items.0.unit_price</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(142,643,201,655)</td>
+<td>单价（1）：61,666.60 元</td>
+</tr>
+<tr>
+<td>items.0.purchase_price.amount</td>
+<td>lease_items</td>
+<td>1</td>
+<td>(142,625,214,637)</td>
+<td>总价（1）：1,911,664.60 元</td>
+</tr>
+</tbody>
+</table>
+
+</body></html>

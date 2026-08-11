@@ -1,0 +1,59 @@
+"""消融基线："纯 LLM 直判"（SPEC 第 6 节指标 9）。
+
+⚠️ 本模块常量固定（BASELINE_VERSION），作为对照组不得随主系统调参而变动。
+- live：把三单据文本直接发给 LLM，让其直判欺诈（固定提示词，temperature=0）；
+- mock：用简单关键词规则代替（固定关键词表），不调用 LLM。
+"""
+from __future__ import annotations
+
+from config.settings import LLMSettings
+
+BASELINE_VERSION = "v1-fixed-2026-08-11"
+
+# mock 基线关键词表（固定）：仅看"账期：0 天"这一类表面异常
+MOCK_KEYWORDS = ["账期：0 天"]
+
+# live 基线提示词（固定）：不做任何结构化解析/核验/规则，仅直判
+BASELINE_PROMPT = """你是风控审核员。以下是一份融资租赁案件的购销合同、增值税发票和租赁物清单全文。
+请直接判断该案件是否存在欺诈嫌疑，只回答 FRAUD 或 NORMAL，不要输出其他内容。
+
+【购销合同】
+{contract}
+
+【增值税发票】
+{invoice}
+
+【租赁物清单】
+{lease_items}"""
+
+
+def predict_baseline_mock(texts: dict[str, str]) -> bool:
+    """mock 关键词直判：任一单据含固定关键词即判欺诈。"""
+    return any(kw in text for kw in MOCK_KEYWORDS for text in texts.values())
+
+
+def predict_baseline_live(
+    texts: dict[str, str], settings: LLMSettings
+) -> tuple[bool, int, int]:
+    """纯 LLM 直判。返回 (是否欺诈, prompt_tokens, completion_tokens)。"""
+    from openai import OpenAI
+
+    client = OpenAI(api_key=settings.api_key, base_url=settings.base_url, timeout=90)
+    prompt = BASELINE_PROMPT.format(
+        contract=texts["contract"][:2500],
+        invoice=texts["invoice"][:2500],
+        lease_items=texts["lease_items"][:2500],
+    )
+    resp = client.chat.completions.create(
+        model=settings.model,
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0,
+        max_tokens=8,
+    )
+    answer = (resp.choices[0].message.content or "").strip().upper()
+    usage = resp.usage
+    return (
+        "FRAUD" in answer,
+        usage.prompt_tokens if usage else 0,
+        usage.completion_tokens if usage else 0,
+    )

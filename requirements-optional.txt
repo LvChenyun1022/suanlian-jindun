@@ -1,0 +1,9 @@
+# suanlian-jindun 可选依赖（不安装不影响核心 pipeline 运行）
+#
+# langgraph：Pipeline 的可选等价实现。核心 pipeline 为纯 Python 函数链，
+#            仅在安装了 langgraph 时可用图编排方式运行，二者行为等价。
+langgraph>=0.2
+#
+# paddleocr：可选 OCR 后端，用于扫描版 PDF 单据的文字识别。
+#            未安装时仅支持文本型 PDF（pymupdf / pdfplumber 解析）。
+paddleocr>=2.7

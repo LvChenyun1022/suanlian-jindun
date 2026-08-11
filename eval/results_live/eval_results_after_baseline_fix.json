@@ -1,0 +1,121 @@
+{
+  "audit_type": "baseline_validity_review",
+  "baseline_version": "v2-fixed-2026-08-11",
+  "run_mode": "live",
+  "cases": 100,
+  "cases_rerun_this_round": 42,
+  "cases_from_cache": 58,
+  "rerun_elapsed_seconds": 117.2,
+  "invalid_count": 0,
+  "invalid_case_ids": [],
+  "label_distribution": {
+    "normal": 88,
+    "fraud": 12
+  },
+  "retry_count_total": 0,
+  "429_count": 0,
+  "tokens": {
+    "prompt": 89408,
+    "completion": 3383
+  },
+  "baseline_cm": {
+    "tp": 11,
+    "fp": 1,
+    "fn": 19,
+    "tn": 69,
+    "precision": 0.9167,
+    "recall": 0.3667,
+    "f1": 0.5238,
+    "fpr": 0.0143,
+    "specificity": 0.9857,
+    "balanced_accuracy": 0.6762,
+    "mcc": 0.4969
+  },
+  "baseline_pattern_recall": {
+    "a_chengxing": {
+      "n_valid": 10,
+      "recall": 1.0
+    },
+    "b_multi_pledge": {
+      "n_valid": 10,
+      "recall": 0.1
+    },
+    "c_circular_trade": {
+      "n_valid": 10,
+      "recall": 0.0
+    }
+  },
+  "sanity_gate": {
+    "single_class_output": false,
+    "single_class_value": null,
+    "invalid_count": 0,
+    "baseline_recall": 0.3667,
+    "lift_status": "valid",
+    "note": "基线输出分布正常，召回提升指标有效。"
+  },
+  "ablation_lift_pp": 63.3,
+  "system_side": {
+    "source": "eval\\results_live\\eval_results_before_baseline_fix.json",
+    "note": "主系统指标继承自修复前全量运行（主系统代码/权重/标签/评测集均未改动）。",
+    "fraud_cm": {
+      "tp": 30,
+      "fp": 0,
+      "fn": 0,
+      "tn": 70,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "specificity": 1.0,
+      "balanced_accuracy": 1.0,
+      "mcc": 1.0
+    },
+    "baseline_v1": {
+      "version": "v1-fixed-2026-08-11",
+      "cm": {
+        "tp": 30,
+        "fp": 70,
+        "fn": 0,
+        "tn": 0,
+        "precision": 0.3,
+        "recall": 1.0,
+        "f1": 0.4615,
+        "fpr": 1.0,
+        "specificity": 0.0,
+        "balanced_accuracy": 0.5,
+        "mcc": 0.0
+      },
+      "tokens": 81208,
+      "note": "v1 仅持久化聚合混淆矩阵，逐案 raw response 未留存，无法逐一审计。"
+    },
+    "ablation_lift_pp_v1": 0.0
+  },
+  "template_leakage_check": {
+    "checked_case_ids": [
+      "case_0001",
+      "case_0003",
+      "case_0005",
+      "case_0006",
+      "case_0007",
+      "case_0009",
+      "case_0010",
+      "case_0011",
+      "case_0012",
+      "case_0013"
+    ],
+    "cue_words": [
+      "账期：0 天",
+      "伪造",
+      "虚假",
+      "欺诈",
+      "重复质押",
+      "一单多押",
+      "空转"
+    ],
+    "hit_count": 0,
+    "hits": [],
+    "note": "所有单据每页固定含合成数据免责声明（预期内，不计为泄漏）。"
+  },
+  "audit_jsonl": "eval\\results\\baseline_audit.jsonl",
+  "cache_file": "eval\\results\\baseline_cache.jsonl"
+}

@@ -1,0 +1,9 @@
+{
+  "name": "suanlian-jindun-demo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "算链金盾 Streamlit Demo（Kimi Work 预览适配：npm run dev 转发 host/port 到 streamlit）",
+  "scripts": {
+    "dev": "node scripts/dev.js"
+  }
+}

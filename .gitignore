@@ -1,0 +1,8 @@
+.env
+.env.txt
+__pycache__/
+*.pyc
+data/*
+!data/.gitkeep
+.pytest_cache/
+.streamlit/
