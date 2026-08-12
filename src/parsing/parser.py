@@ -277,7 +277,7 @@ def parse_document(
     """解析单份 PDF 为要素模型 + 字段级证据。
 
     Raises:
-        ParseError: 字段缺失/格式错误/模型校验失败（已写审计日志）。
+        ParseError: 字段缺失/格式错误/模型校验失败/无文本层（已写审计日志）。
     """
     dt = DocType(doc_type)
     s = settings or load_settings()
@@ -293,6 +293,22 @@ def parse_document(
             audit.log("parsing.error", {"file": str(path), "doc_type": dt.value},
                       {"error": err.to_log()})
         raise err from e
+    # 通用降级信号：无文本层（扫描件/图片型 PDF）直接给出显式错误，
+    # 不进入逐字段缺失流程，也不对空文本调用 LLM 补抽。OCR 为预留能力未启用。
+    if not parser.reader.has_text_layer:
+        err = ParseError(
+            f"{_DOC_NAMES[dt]} 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；"
+            "OCR 为预留能力（requirements-optional: paddleocr），未启用",
+            code="PARSE_NO_TEXT_LAYER",
+            context={"doc_type": dt.value, "file": parser.source_file,
+                     "text_layer_page_ratio": parser.reader.text_layer_page_ratio,
+                     "is_likely_scanned": parser.reader.is_likely_scanned},
+        )
+        if audit:
+            audit.log("parsing.error", {"file": parser.source_file, "doc_type": dt.value},
+                      {"error": err.to_log(), "context": err.context})
+        parser.reader.close()
+        raise err
     try:
         scalars = parser.extract_scalars(_SCALAR_SPECS[dt])
         items = parser.extract_items() if dt is DocType.LEASE_ITEMS else None

@@ -19,7 +19,12 @@ class RawHit:
 
 
 class PdfTextReader:
-    """按"标签：值"行检索字段。坐标统一转为 PDF 用户空间（左下原点）。"""
+    """按"标签：值"行检索字段。坐标统一转为 PDF 用户空间（左下原点）。
+
+    通用健壮性（外部效度 mini-test 阶段新增）：记录逐页文本/图像统计，
+    可识别"无文本层"的扫描件/图片型 PDF（has_text_layer / is_likely_scanned），
+    供解析层给出显式降级信号而不是静默空抽取。
+    """
 
     def __init__(self, path: str | Path) -> None:
         self.path = Path(path)
@@ -27,6 +32,8 @@ class PdfTextReader:
         self._doc = None
         self._page_heights: list[float] = []
         self.pages_text: list[list[str]] = []
+        self.page_char_counts: list[int] = []   # 逐页去空白字符数
+        self.page_image_counts: list[int] = []  # 逐页嵌入图像数（pymupdf 可得时）
         self._read()
 
     def _read(self) -> None:
@@ -35,13 +42,15 @@ class PdfTextReader:
 
             doc = pymupdf.open(self.path)
             pages = [page.get_text().splitlines() for page in doc]
-            if not any(line.strip() for page in pages for line in page):
-                raise ValueError("PyMuPDF 未提取到文本")
-            self._doc = doc
-            self._page_heights = [page.rect.height for page in doc]
-            self.pages_text = pages
-            self.backend = "pymupdf"
-            return
+            self.page_char_counts = [len("".join(lines).strip()) for lines in pages]
+            self.page_image_counts = [len(page.get_images()) for page in doc]
+            if any(line.strip() for page in pages for line in page):
+                self._doc = doc
+                self._page_heights = [page.rect.height for page in doc]
+                self.pages_text = pages
+                self.backend = "pymupdf"
+                return
+            doc.close()  # 无文本层：落入 pdfplumber 备用（统计已保留）
         except Exception:
             pass
         # 备用：pdfplumber（无坐标检索，bbox=None）
@@ -49,11 +58,30 @@ class PdfTextReader:
 
         with pdfplumber.open(self.path) as pdf:
             self.pages_text = [(p.extract_text() or "").splitlines() for p in pdf.pages]
+        if not self.page_char_counts:
+            self.page_char_counts = [len("".join(lines).strip()) for lines in self.pages_text]
         self.backend = "pdfplumber"
 
     @property
     def page_count(self) -> int:
         return len(self.pages_text)
+
+    @property
+    def has_text_layer(self) -> bool:
+        """是否存在"有意义文本"的页（>20 字符，排除空白页/纯图页）。"""
+        return any(c > 20 for c in self.page_char_counts)
+
+    @property
+    def text_layer_page_ratio(self) -> float:
+        """有意义文本页占比（0–1）；无页时返回 0。"""
+        if not self.page_char_counts:
+            return 0.0
+        return sum(1 for c in self.page_char_counts if c > 20) / len(self.page_char_counts)
+
+    @property
+    def is_likely_scanned(self) -> bool:
+        """无有意义文本层但含嵌入图像页 → 疑似扫描件/图片型 PDF。"""
+        return not self.has_text_layer and any(self.page_image_counts)
 
     def full_text(self) -> str:
         return "\n".join(line for page in self.pages_text for line in page)

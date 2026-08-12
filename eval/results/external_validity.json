@@ -1,0 +1,325 @@
+{
+  "test": "external_validity_mini_test",
+  "generated_at": "2026-08-12T17:29:55.951193+00:00",
+  "ocr_enabled": false,
+  "ocr_note": "OCR（paddleocr）为预留能力，本次未启用；扫描件无文本层属预期行为边界。",
+  "samples_dir": "data/external/（不入库、不上传、不再分发）",
+  "samples": [
+    {
+      "sample_id": "contract_A",
+      "source": {
+        "type": "售后回租合同特别条款（真实公章+手写签名扫描版式）",
+        "channel": "港交所披露易",
+        "date": "2026-06"
+      },
+      "annotation_method": "人工视觉阅读全部 4 页（无文本层）",
+      "text_layer": {
+        "pages": 4,
+        "backend": "pdfplumber",
+        "has_text_layer": false,
+        "text_layer_page_ratio": 0.0,
+        "is_likely_scanned": true,
+        "total_chars": 0
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lessor": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lessee": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "term_months": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lease_list_rows": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "附件一《租赁物清单》未包含在该披露文件节选中（条款页引用其存在）"
+        }
+      },
+      "extraction_rate": 0.0,
+      "fields_hit": "0/5",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_NO_TEXT_LAYER",
+        "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      }
+    },
+    {
+      "sample_id": "contract_B",
+      "source": {
+        "type": "售后回租合同（专用条款大表式版式，含骑缝章与横排清单）",
+        "channel": "港交所披露易",
+        "date": "2025-09"
+      },
+      "annotation_method": "人工视觉阅读关键页（封面/目录/专用条款 p1-5、签署页 p30、清单 p31-42，无文本层）",
+      "text_layer": {
+        "pages": 56,
+        "backend": "pdfplumber",
+        "has_text_layer": false,
+        "text_layer_page_ratio": 0.0,
+        "is_likely_scanned": true,
+        "total_chars": 0
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lessor": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lessee": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "term_months": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lease_list_rows": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        }
+      },
+      "extraction_rate": 0.0,
+      "fields_hit": "0/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_NO_TEXT_LAYER",
+        "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      }
+    },
+    {
+      "sample_id": "contract_C",
+      "source": {
+        "type": "售后回租合同（全文对角水印+骑缝章，发票号级租赁物清单）",
+        "channel": "上市公司公告附件（东方财富 PDF 库）",
+        "date": "2022-05"
+      },
+      "annotation_method": "人工视觉阅读关键页（p1-3 重要条款、p25-30 附件区，无文本层）",
+      "text_layer": {
+        "pages": 35,
+        "backend": "pdfplumber",
+        "has_text_layer": false,
+        "text_layer_page_ratio": 0.0,
+        "is_likely_scanned": true,
+        "total_chars": 0
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lessor": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lessee": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "term_months": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        },
+        "lease_list_rows": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "扫描页无文本层",
+          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+        }
+      },
+      "extraction_rate": 0.0,
+      "fields_hit": "0/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_NO_TEXT_LAYER",
+        "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      }
+    },
+    {
+      "sample_id": "invoice_style",
+      "source": {
+        "type": "数电发票样式（官方票样，25 类票样为嵌入图片）",
+        "channel": "国家税务总局 2024 年第 11 号公告附件（由 doc 附件经 Word 转 PDF）",
+        "date": "2024-11"
+      },
+      "annotation_method": "文本层逐页检查：16 页均仅有分节标题（23-51 字符/页），票面要素全部以图片形式嵌入",
+      "text_layer": {
+        "pages": 16,
+        "backend": "pymupdf",
+        "has_text_layer": true,
+        "text_layer_page_ratio": 0.9375,
+        "is_likely_scanned": false,
+        "total_chars": 534
+      },
+      "fields": {
+        "invoice_no": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "字段缺失",
+          "note": "票面要素以图片嵌入，文本层仅分节标题"
+        },
+        "invoice_date": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "字段缺失",
+          "note": "票面要素以图片嵌入，文本层仅分节标题"
+        },
+        "seller": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "字段缺失",
+          "note": "票面要素以图片嵌入，文本层仅分节标题"
+        },
+        "buyer": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "字段缺失",
+          "note": "票面要素以图片嵌入，文本层仅分节标题"
+        },
+        "amount_incl_tax": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "字段缺失",
+          "note": "票面要素以图片嵌入，文本层仅分节标题"
+        },
+        "tax_amount": {
+          "truth_present": true,
+          "extracted": false,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "字段缺失",
+          "note": "票面要素以图片嵌入，文本层仅分节标题"
+        }
+      },
+      "extraction_rate": 0.0,
+      "fields_hit": "0/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_FIELD_MISSING",
+        "message": "增值税专用发票 缺失必填字段: ['invoice_no', 'invoice_date', 'seller_name', 'buyer_name', 'item_name', 'quantity', 'unit_price', 'amou"
+      }
+    }
+  ],
+  "summary": {
+    "samples_n": 4,
+    "fields_hit": 0,
+    "fields_present": 23,
+    "overall_extraction_rate": 0.0,
+    "failure_mode_counts": {
+      "扫描页无文本层": 17,
+      "字段缺失": 6
+    },
+    "untouched_modes": {
+      "水印干扰": "合同 C 全文对角水印，但因无文本层未触及该失败面",
+      "跨页表格断裂": "合同 B/C 清单均为跨页表格，但因无文本层未触及该失败面"
+    },
+    "degradation_all_graceful": true
+  },
+  "sensitive_policy": "输出不含银行账号/电话/身份证类敏感字段原文；样本以来源类型+渠道+日期描述。"
+}
