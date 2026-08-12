@@ -6,4 +6,8 @@ langgraph>=0.2
 #
 # paddleocr：可选 OCR 后端，用于扫描版 PDF 单据的文字识别。
 #            未安装时仅支持文本型 PDF（pymupdf / pdfplumber 解析）。
-paddleocr>=2.7
+#            版本说明：paddlepaddle 3.3.x 存在已知 CPU(oneDNN/PIR) 推理 bug
+#            （ConvertPirAttribute2RuntimeAttribute not support [pir::ArrayAttribute...]），
+#            实测须固定 paddlepaddle==3.2.2（paddleocr 3.7.0 验证可用）。
+paddleocr>=3.7
+paddlepaddle==3.2.2

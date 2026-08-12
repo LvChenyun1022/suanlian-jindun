@@ -1,8 +1,8 @@
 {
-  "test": "external_validity_mini_test",
-  "generated_at": "2026-08-12T18:59:21.696748+00:00",
-  "ocr_enabled": false,
-  "ocr_note": "OCR 未启用（--ocr 或 ENABLE_OCR=1 可开启）；扫描件无文本层属预期行为边界。",
+  "test": "external_validity_mini_test_v2",
+  "generated_at": "2026-08-12T18:58:38.723367+00:00",
+  "ocr_enabled": true,
+  "ocr_note": "OCR（paddleocr 3.7 + paddlepaddle 3.2.2，250DPI，仅关键页）已启用；低置信字段转人工路由（ocr_low_confidence）。",
   "samples_dir": "data/external/（不入库、不上传、不再分发）",
   "samples": [
     {
@@ -24,43 +24,43 @@
       "fields": {
         "contract_no": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lessor": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lessee": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "amount": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "term_months": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lease_list_rows": {
           "truth_present": false,
@@ -71,13 +71,19 @@
           "note": "附件一《租赁物清单》未包含在该披露文件节选中（条款页引用其存在）"
         }
       },
-      "extraction_rate": 0.0,
-      "fields_hit": "0/5",
+      "extraction_rate": 1.0,
+      "fields_hit": "5/5",
       "degradation": {
         "graceful": true,
         "outcome": "structured_parse_error",
         "code": "PARSE_NO_TEXT_LAYER",
         "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      },
+      "ocr": {
+        "pages_ocr": 4,
+        "seconds_total": 293.01,
+        "seconds_per_page": 73.25,
+        "key_pages_only": true
       }
     },
     {
@@ -99,60 +105,66 @@
       "fields": {
         "contract_no": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lessor": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lessee": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "amount": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "term_months": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lease_list_rows": {
           "truth_present": true,
-          "extracted": false,
+          "extracted": true,
           "matched": false,
           "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "failure_mode": "跨页表格断裂",
+          "note": "OCR 复测未命中"
         }
       },
-      "extraction_rate": 0.0,
-      "fields_hit": "0/6",
+      "extraction_rate": 0.8333,
+      "fields_hit": "5/6",
       "degradation": {
         "graceful": true,
         "outcome": "structured_parse_error",
         "code": "PARSE_NO_TEXT_LAYER",
         "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      },
+      "ocr": {
+        "pages_ocr": 5,
+        "seconds_total": 391.3,
+        "seconds_per_page": 78.26,
+        "key_pages_only": true
       }
     },
     {
@@ -174,60 +186,66 @@
       "fields": {
         "contract_no": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lessor": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "lessee": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "amount": {
           "truth_present": true,
-          "extracted": false,
-          "matched": false,
-          "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
         },
         "term_months": {
           "truth_present": true,
-          "extracted": false,
+          "extracted": true,
           "matched": false,
           "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "failure_mode": "ocr 误识别（字形混淆）",
+          "note": "OCR 复测未命中"
         },
         "lease_list_rows": {
           "truth_present": true,
-          "extracted": false,
+          "extracted": true,
           "matched": false,
           "status": "fail",
-          "failure_mode": "扫描页无文本层",
-          "note": "整本无文本层，正则/LLM 均无可抽取文本"
+          "failure_mode": "跨页表格断裂",
+          "note": "OCR 复测未命中"
         }
       },
-      "extraction_rate": 0.0,
-      "fields_hit": "0/6",
+      "extraction_rate": 0.6667,
+      "fields_hit": "4/6",
       "degradation": {
         "graceful": true,
         "outcome": "structured_parse_error",
         "code": "PARSE_NO_TEXT_LAYER",
         "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      },
+      "ocr": {
+        "pages_ocr": 6,
+        "seconds_total": 571.21,
+        "seconds_per_page": 95.2,
+        "key_pages_only": true
       }
     },
     {
@@ -253,7 +271,7 @@
           "matched": false,
           "status": "fail",
           "failure_mode": "字段缺失",
-          "note": "标签/结构未被通用正则覆盖"
+          "note": "OCR 复测未命中"
         },
         "invoice_date": {
           "truth_present": true,
@@ -261,7 +279,7 @@
           "matched": false,
           "status": "fail",
           "failure_mode": "字段缺失",
-          "note": "标签/结构未被通用正则覆盖"
+          "note": "OCR 复测未命中"
         },
         "seller": {
           "truth_present": true,
@@ -269,7 +287,7 @@
           "matched": false,
           "status": "fail",
           "failure_mode": "字段缺失",
-          "note": "标签/结构未被通用正则覆盖"
+          "note": "OCR 复测未命中"
         },
         "buyer": {
           "truth_present": true,
@@ -277,7 +295,7 @@
           "matched": false,
           "status": "fail",
           "failure_mode": "字段缺失",
-          "note": "标签/结构未被通用正则覆盖"
+          "note": "OCR 复测未命中"
         },
         "amount_incl_tax": {
           "truth_present": true,
@@ -285,7 +303,7 @@
           "matched": false,
           "status": "fail",
           "failure_mode": "字段缺失",
-          "note": "标签/结构未被通用正则覆盖"
+          "note": "OCR 复测未命中"
         },
         "tax_amount": {
           "truth_present": true,
@@ -293,7 +311,7 @@
           "matched": false,
           "status": "fail",
           "failure_mode": "字段缺失",
-          "note": "标签/结构未被通用正则覆盖"
+          "note": "OCR 复测未命中"
         }
       },
       "extraction_rate": 0.0,
@@ -303,6 +321,12 @@
         "outcome": "structured_parse_error",
         "code": "PARSE_FIELD_MISSING",
         "message": "增值税专用发票 缺失必填字段: ['invoice_no', 'invoice_date', 'seller_name', 'buyer_name', 'item_name', 'quantity', 'unit_price', 'amou"
+      },
+      "ocr": {
+        "pages_ocr": 4,
+        "seconds_total": 283.89,
+        "seconds_per_page": 70.97,
+        "key_pages_only": true
       }
     },
     {
@@ -458,20 +482,49 @@
   ],
   "summary": {
     "samples_n": 6,
-    "fields_hit": 10,
+    "fields_hit": 24,
     "fields_present": 34,
-    "overall_extraction_rate": 0.2941,
+    "overall_extraction_rate": 0.7059,
     "ocr_low_confidence_fields": 0,
     "failure_mode_counts": {
-      "扫描页无文本层": 17,
+      "跨页表格断裂": 2,
+      "ocr 误识别（字形混淆）": 1,
       "字段缺失": 6,
       "表格结构差异": 1
     },
-    "degradation_all_graceful": true,
-    "untouched_modes": {
-      "水印干扰": "合同 C 全文对角水印，但因无文本层未触及该失败面（--ocr 复测触及）",
-      "跨页表格断裂": "合同 B/C 清单均为跨页表格，但因无文本层未触及该失败面（--ocr 复测触及）"
-    }
+    "degradation_all_graceful": true
   },
-  "sensitive_policy": "输出不含银行账号/电话/身份证类敏感字段原文；样本以来源类型+渠道+日期描述。"
+  "sensitive_policy": "输出不含银行账号/电话/身份证类敏感字段原文；样本以来源类型+渠道+日期描述。",
+  "v1_comparison": [
+    {
+      "sample_id": "contract_A",
+      "v1_hit": "0/5",
+      "v2_hit": "5/5"
+    },
+    {
+      "sample_id": "contract_B",
+      "v1_hit": "0/6",
+      "v2_hit": "5/6"
+    },
+    {
+      "sample_id": "contract_C",
+      "v1_hit": "0/6",
+      "v2_hit": "4/6"
+    },
+    {
+      "sample_id": "invoice_style",
+      "v1_hit": "0/6",
+      "v2_hit": "0/6"
+    },
+    {
+      "sample_id": "template_sale_filled",
+      "v1_hit": "5/6",
+      "v2_hit": "5/6"
+    },
+    {
+      "sample_id": "template_data_service_filled",
+      "v1_hit": "5/5",
+      "v2_hit": "5/5"
+    }
+  ]
 }
