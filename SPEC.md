@@ -1,9 +1,28 @@
 # SPEC — suanlian-jindun（算链金盾）：算力融资租赁智能风控演示系统
 
-> 版本：v0.7（文档与提交材料阶段）
+> 版本：v0.8（外部效度 v2/v3：OCR 可选链路 + 字段级交叉校验）
 > 本文档是后续所有实现阶段的唯一规格依据。接口、schema、指标口径以本文为准。
 
 ### 修订记录
+
+- **v0.8**（外部效度 v2/v3，2026-08-13）：
+  - **OCR 可选链路**（v2）：`src/parsing/ocr.py`——PaddleOCR 中文模型、250DPI、逐页写穿缓存、
+    关键页选择、行置信度 <0.80 字段转人工（`ocr_low_confidence`）；默认关闭，仅
+    `eval/run_external.py --ocr` 或 `ENABLE_OCR=1` 启用；未安装 paddleocr 行为不变。
+    `requirements-optional.txt` 固定 `paddlepaddle==3.2.2`（3.3.x 有已知 CPU 推理 bug）。
+  - **字段级交叉校验**（v3）：`src/parsing/chinese_amount.py`（中文大写金额/阿拉伯金额解析，
+    0 token）+ `src/validation/field_validation.py`（统一 validation 阶段：金额大写/小写交叉、
+    期限边界 [1,120] 月可配置于 `config/settings.py`、多值冲突与起止日期一致性）；
+    review 级标记 = 字段置信度置 0 转人审（`amount_mismatch_daxie` / `amount_parse_failed` /
+    `term_out_of_bounds` / `term_inconsistent` / `term_parse_failed`），绝不静默替换值；
+    info 级记录（`amount_crosscheck_match` / `amount_crosscheck_unavailable`）不惩罚。
+  - schema 新增 `ValidationFlag`；`PipelineState` 新增 `validation_flags`；
+    pipeline 新增 `stage_validate`（解析层之后，见 4.3）；审计日志记录原始值掩码；
+    Streamlit 人审面板显示原因码。
+  - 外部效度结果：v1 纯文本层 0/23；v2 OCR 24/34（71%）；v3 在 v2 基础上 contract_C
+    `term_months` 由静默错值（OCR 144→44）转为 `term_inconsistent` 拦截转人审（真阳），
+    contract_B 180 月触发 `term_out_of_bounds`（假阳·规则边界，已人工核对记录）。
+    报告：`eval/results/external_validity{,_v2,_v3}.{md,json}`（v1 口径复跑逐字段冻结一致）。
 
 - **v0.7**（文档与提交材料阶段）：
   - 交付 README（合规红线/架构/真实评测表/已知局限）、`docs/compliance.md`（监管条款→功能对照）、
@@ -362,6 +381,7 @@ class PipelineState(BaseModel):
 
     verification: VerificationResult | None = None
     rule_hits: list[RuleHit] = []
+    validation_flags: list[ValidationFlag] = []     # v0.8 新增：字段级交叉校验标记
     stress: ResidualStressResult | None = None
     alerts: list[UtilizationAlert] = []
     risk_score: RiskScore | None = None
@@ -381,6 +401,10 @@ def stage_guardrail_in(state: PipelineState) -> PipelineState:
 
 def stage_parse(state: PipelineState) -> PipelineState:
     """M2：填充 contract/invoice/lease_items/evidences。"""
+
+def stage_validate(state: PipelineState) -> PipelineState:
+    """v0.8 新增：字段级交叉校验（解析层之后、核验之前），填充 validation_flags。
+    review 级标记 = 字段置信度置 0 转人审；info 级仅记录。不改变 M2 抽取接口。"""
 
 def stage_verify(state: PipelineState) -> PipelineState:
     """M3：填充 verification。"""
