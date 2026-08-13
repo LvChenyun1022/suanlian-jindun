@@ -188,6 +188,29 @@ class RiskScore(BaseModel):
 
 # ---------- 审计日志 ----------
 
+
+class ValidationFlag(BaseModel):
+    """字段级交叉校验标记（v3）：解析层之后统一 validation 阶段的输出。
+
+    severity="review" → 该字段置信度置 0，转人审路由（与 ocr_low_confidence 同路由）；
+    severity="info"   → 仅记录（如无法交叉校验），不惩罚。
+    """
+
+    field_name: str                # 要素字段（如 contract.total_amount）
+    reason_code: Literal[
+        "amount_mismatch_daxie",        # 大写/小写金额不一致
+        "amount_parse_failed",          # 写法存在但解析失败
+        "amount_crosscheck_match",      # 交叉校验通过（info）
+        "amount_crosscheck_unavailable",  # 只有一种写法，无法交叉（info）
+        "term_out_of_bounds",           # 期限越出有效区间
+        "term_inconsistent",            # 期限多值冲突或与起止日期矛盾
+        "term_parse_failed",            # 期限文本无法解析为有效数字
+    ]
+    severity: Literal["review", "info"]
+    detail: str
+    raw_masked: str = ""           # 原始值（掩码）
+
+
 class AuditLogRecord(BaseModel):
     """审计日志记录（哈希链）。"""
 
@@ -231,6 +254,7 @@ class PipelineState(BaseModel):
 
     verification: VerificationResult | None = None
     rule_hits: list[RuleHit] = []
+    validation_flags: list[ValidationFlag] = []   # v3 新增：字段级交叉校验标记
     stress: ResidualStressResult | None = None
     alerts: list[UtilizationAlert] = []
     risk_score: RiskScore | None = None

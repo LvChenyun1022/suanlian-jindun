@@ -10,6 +10,16 @@ from dataclasses import dataclass
 
 from dotenv import load_dotenv
 
+# ---------- 字段级交叉校验配置（v3） ----------
+# 融资租赁期限有效区间（月）：业务常见期限 1 个月–10 年，
+# 越界值大概率为 OCR 误识别或录入错误 → 置信度置 0 转人审，不静默采信。
+TERM_MONTHS_MIN = 1
+TERM_MONTHS_MAX = 120
+# 起止日期与期限的一致性容差（月）
+TERM_CONSISTENCY_TOLERANCE_MONTHS = 1
+# 金额大写/小写交叉校验容差（元）
+AMOUNT_CROSSCHECK_TOLERANCE = "0.01"
+
 
 @dataclass(frozen=True)
 class LLMSettings:

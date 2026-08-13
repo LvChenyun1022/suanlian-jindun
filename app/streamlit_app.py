@@ -186,6 +186,20 @@ def panel_score(state: PipelineState) -> None:
         st.error("路由结论：>90，建议拒绝。")
     st.caption("理由：" + "；".join(rs.reasons))
 
+    review_flags = [f for f in state.validation_flags if f.severity == "review"]
+    if review_flags:
+        st.warning("字段级交叉校验命中（字段置信度已置 0，**转人审路由**）：")
+        st.dataframe(pd.DataFrame([
+            {"字段": f.field_name, "原因码": f.reason_code,
+             "说明": f.detail, "原始值(掩码)": f.raw_masked}
+            for f in review_flags
+        ]), use_container_width=True, hide_index=True)
+    info_flags = [f for f in state.validation_flags if f.severity == "info"]
+    if info_flags:
+        st.caption(f"交叉校验信息记录 {len(info_flags)} 条"
+                   "（仅一种写法无法交叉，不惩罚）："
+                   + "；".join(sorted({f.reason_code for f in info_flags})))
+
     st.markdown("**人工复核操作**（写入审计日志）")
     decision = st.session_state.get("manual_decision")
     if decision:

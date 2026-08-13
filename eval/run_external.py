@@ -2,7 +2,7 @@
 
 用法：
     python -m eval.run_external                        # v1 口径（文本层，输出 external_validity.*）
-    python -m eval.run_external --ocr                  # v2 口径（OCR 增强，输出 external_validity_v2.*）
+    python -m eval.run_external --ocr                  # v3 口径（OCR+交叉校验，输出 external_validity_v3.*）
     ENABLE_OCR=1 python -m eval.run_external           # 等价于 --ocr
 
 设计纪律：
@@ -31,6 +31,7 @@ from src.parsing import ocr as ocr_mod
 from src.parsing.parser import parse_document
 from src.parsing.reader import PdfTextReader
 from src.schemas import DocType
+from src.validation import validate_document
 
 # ---------------------------------------------------------------- 通用字段抽取器
 # 标签型正则 + 通用同义标签表（出租人/出卖人/委托方……），面向中文合同/发票的
@@ -239,7 +240,8 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
     ocr_active = use_ocr and ocr_mod.is_available()
     samples: list[dict] = []
     mode_counts: dict[str, int] = {}
-    n_low_conf = 0
+    total_low_conf = 0
+    total_validation_review = 0
 
     for t in truths:
         path = Path(t["file"])
@@ -298,13 +300,11 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
             elif low_conf and matched:
                 status, mode = "ocr_low_confidence", None
                 note = f"OCR 行置信度 < {ocr_mod.FIELD_CONF_THRESHOLD}，转人工路由（不静默计命中）"
-                n_low_conf += 1
             elif matched:
                 status, mode, note = "ok", None, ("OCR 兜底命中" if via_ocr else "")
             elif low_conf:
                 status, mode = "ocr_low_confidence", None
                 note = "OCR 低置信且与真值不符，转人工路由"
-                n_low_conf += 1
             elif need_ocr:
                 status = "fail"
                 if annotated_mode:
@@ -331,11 +331,6 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
                 else:
                     mode = "水印干扰" if wm else "条款结构差异"
                     note = "抽取到值但与真值不符" + ("（疑似水印字符干扰）" if wm else "")
-            if present:
-                n_present += 1
-                n_hit += 1 if matched and not low_conf else 0
-                if mode:
-                    mode_counts[mode] = mode_counts.get(mode, 0) + 1
             fields[field] = {
                 "truth_present": present,
                 "extracted": extracted is not None,
@@ -344,6 +339,50 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
                 "failure_mode": mode,
                 "note": note,
             }
+
+        # ---------------- v3：字段级交叉校验（仅 OCR/v3 模式；默认 v1 口径不受影响）
+        # 金额大写/小写交叉 + 期限边界/一致性；review 级标记 → 字段置信度置 0 转人审，
+        # 不静默采信（如 contract_C term_months 的 "44 vs 144" 多值冲突）。
+        sample_flags: list[dict] = []
+        if use_ocr:
+            eff_text = ocr_text if need_ocr else full_text
+            doc_kind = "invoice" if t["sample_id"] == "invoice_style" else "contract"
+            for vf in validate_document(eff_text, doc_kind):
+                entry = {"field_name": vf.field_name, "reason_code": vf.reason_code,
+                         "severity": vf.severity, "detail": vf.detail,
+                         "raw_masked": vf.raw_masked}
+                sample_flags.append(entry)
+                if vf.severity != "review":
+                    continue
+                if vf.reason_code.startswith("amount"):
+                    target = "amount" if "amount" in fields else (
+                        "amount_incl_tax" if "amount_incl_tax" in fields else None)
+                else:
+                    target = next((f for f in ("term_months", "term_days", "term_end")
+                                   if f in fields), None)
+                if target and fields[target]["truth_present"]:
+                    fr = fields[target]
+                    fr["status"] = "validation_review"
+                    fr["failure_mode"] = vf.reason_code
+                    fr["note"] = vf.detail + "（字段置信度置 0，转人审）"
+                    fr["matched"] = False
+
+        # 校验覆盖后统一计数：命中=status ok；失败模式只统计 fail；review 单列
+        n_present = n_hit = 0
+        for f, r_ in fields.items():
+            if not r_["truth_present"]:
+                continue
+            n_present += 1
+            if r_["status"] == "ok":
+                n_hit += 1
+            elif r_["status"] == "fail" and r_["failure_mode"]:
+                mode_counts[r_["failure_mode"]] = mode_counts.get(r_["failure_mode"], 0) + 1
+        n_validation_review = sum(1 for r_ in fields.values()
+                                  if r_["status"] == "validation_review")
+        total_validation_review += n_validation_review
+        n_low_conf = sum(1 for r_ in fields.values()
+                         if r_["status"] == "ocr_low_confidence")
+        total_low_conf += n_low_conf
 
         # 优雅降级验证：现有解析入口对样本的行为（强制 mock，不触 LLM）
         # 无文本层样本期望结构化 ParseError；有文本层样本（示范文本）解析成功也属正常，
@@ -376,6 +415,8 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
             "fields_hit": f"{n_hit}/{n_present}",
             "degradation": degradation,
         }
+        if sample_flags:
+            sample["validation_flags"] = sample_flags
         if ocr_meta is not None:
             sample["ocr"] = {
                 "pages_ocr": ocr_meta["pages_ocr"],
@@ -388,12 +429,13 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
     total_present = sum(int(s["fields_hit"].split("/")[1]) for s in samples)
     total_hit = sum(int(s["fields_hit"].split("/")[0]) for s in samples)
     result = {
-        "test": "external_validity_mini_test_v2" if use_ocr else "external_validity_mini_test",
+        "test": "external_validity_v3" if use_ocr else "external_validity_mini_test",
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "ocr_enabled": ocr_active,
         "ocr_note": (
             "OCR（paddleocr 3.7 + paddlepaddle 3.2.2，250DPI，仅关键页）已启用；"
-            "低置信字段转人工路由（ocr_low_confidence）。"
+            "低置信字段转人工路由（ocr_low_confidence）；"
+            "字段级交叉校验（金额大写/小写、期限边界/一致性）已启用，review 级标记转人审。"
             if ocr_active else
             "OCR 未启用（--ocr 或 ENABLE_OCR=1 可开启）；扫描件无文本层属预期行为边界。"
         ),
@@ -404,7 +446,8 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
             "fields_hit": total_hit,
             "fields_present": total_present,
             "overall_extraction_rate": round(total_hit / total_present, 4) if total_present else None,
-            "ocr_low_confidence_fields": n_low_conf,
+            "ocr_low_confidence_fields": total_low_conf,
+            "validation_review_fields": total_validation_review,
             "failure_mode_counts": mode_counts,
             "degradation_all_graceful": all(s["degradation"]["graceful"] for s in samples),
         },
@@ -416,7 +459,7 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
             "跨页表格断裂": "合同 B/C 清单均为跨页表格，但因无文本层未触及该失败面（--ocr 复测触及）",
         }
 
-    # v2 与 v1 对比（若 v1 结果存在）
+    # v3 与 v1/v2 对比（若结果存在）；并列出 v2→v3 字段级状态变化（校验拦截记录）
     if use_ocr:
         v1_path = Path(out_dir) / "external_validity.json"
         if v1_path.exists():
@@ -427,14 +470,32 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
                 v1s = v1_by_id.get(s["sample_id"])
                 cmp_rows.append({
                     "sample_id": s["sample_id"],
-                    "v1_hit": v1s["fields_hit"] if v1s else "—（v2 新增样本）",
-                    "v2_hit": s["fields_hit"],
+                    "v1_hit": v1s["fields_hit"] if v1s else "—（v3 新增样本）",
+                    "v3_hit": s["fields_hit"],
                 })
             result["v1_comparison"] = cmp_rows
+        v2_path = Path(out_dir) / "external_validity_v2.json"
+        if v2_path.exists():
+            v2 = json.loads(v2_path.read_text(encoding="utf-8"))
+            v2_by_id = {s["sample_id"]: s for s in v2["samples"]}
+            changes = []
+            for s in samples:
+                v2s = v2_by_id.get(s["sample_id"])
+                if not v2s:
+                    continue
+                for f, r_ in s["fields"].items():
+                    old = v2s["fields"].get(f, {})
+                    if old.get("status") != r_["status"]:
+                        changes.append({
+                            "sample_id": s["sample_id"], "field": f,
+                            "v2_status": f"{old.get('status')}/{old.get('failure_mode') or ''}",
+                            "v3_status": f"{r_['status']}/{r_.get('failure_mode') or ''}",
+                        })
+            result["v2_to_v3_changes"] = changes
 
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    stem = "external_validity_v2" if use_ocr else "external_validity"
+    stem = "external_validity_v3" if use_ocr else "external_validity"
     (out / f"{stem}.json").write_text(
         json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     (out / f"{stem}.md").write_text(render_md(result), encoding="utf-8")
@@ -451,7 +512,8 @@ def _src_desc(s: dict) -> str:
 
 def render_md(r: dict) -> str:
     L: list[str] = []
-    title = "外部效度测试报告 v2（OCR 增强复测）" if r["ocr_enabled"] else "外部效度 mini-test 报告"
+    title = ("外部效度测试报告 v3（OCR + 字段级交叉校验）" if r["ocr_enabled"]
+             else "外部效度 mini-test 报告")
     L.append(f"# {title}\n")
     L.append(f"- 生成时间：{r['generated_at']}")
     L.append(f"- 样本目录：{r['samples_dir']}")
@@ -497,6 +559,8 @@ def render_md(r: dict) -> str:
         for f, r_ in s["fields"].items():
             if r_["status"] == "ocr_low_confidence":
                 mark, mode = "⚠️转人工", "ocr_low_confidence"
+            elif r_["status"] == "validation_review":
+                mark, mode = "🛑转人审", r_["failure_mode"] or "validation"
             else:
                 mark = "✅" if r_["matched"] else "—" if not r_["truth_present"] else "❌"
                 mode = r_["failure_mode"] or ""
@@ -504,6 +568,20 @@ def render_md(r: dict) -> str:
                      f"{'是' if r_['truth_present'] else '否(预期不可抽取)'} | "
                      f"{'是' if r_['extracted'] else '否'} | {mark} | {mode} |")
     L.append("")
+    # v3：字段级交叉校验标记明细
+    flag_rows = [
+        (s["sample_id"], vf)
+        for s in r["samples"] for vf in s.get("validation_flags", [])
+    ]
+    if flag_rows:
+        L.append("### 字段级交叉校验标记（v3 新增）\n")
+        L.append("| 样本 | 字段 | 原因码 | 级别 | 说明 |")
+        L.append("|---|---|---|---|---|")
+        for sid, vf in flag_rows:
+            icon = "🛑" if vf["severity"] == "review" else "ℹ️"
+            L.append(f"| {sid} | {vf['field_name']} | {vf['reason_code']} | "
+                     f"{icon}{vf['severity']} | {vf['detail'][:60]} |")
+        L.append("")
     sm = r["summary"]
     L.append("## 失败模式分类汇总\n")
     L.append("| 失败模式 | 字段数 | 说明 |")
@@ -515,15 +593,23 @@ def render_md(r: dict) -> str:
     L.append("")
     L.append(f"**总体抽取率：{sm['fields_hit']}/{sm['fields_present']}"
              + (f"（{sm['overall_extraction_rate']:.0%}）" if sm["overall_extraction_rate"] is not None else "")
-             + f"；OCR 低置信转人工字段数：{sm['ocr_low_confidence_fields']}；"
+             + f"；OCR 低置信转人工：{sm['ocr_low_confidence_fields']}；"
+             f"交叉校验转人审：{sm.get('validation_review_fields', 0)}；"
              f"优雅降级全部正常：{'是' if sm['degradation_all_graceful'] else '否'}**")
     L.append("")
+    if r.get("v2_to_v3_changes"):
+        L.append("## v2 → v3 字段级状态变化（交叉校验拦截记录）\n")
+        L.append("| 样本 | 字段 | v2 状态 | v3 状态 |")
+        L.append("|---|---|---|---|")
+        for c in r["v2_to_v3_changes"]:
+            L.append(f"| {c['sample_id']} | {c['field']} | {c['v2_status']} | {c['v3_status']} |")
+        L.append("")
     if r.get("v1_comparison"):
         L.append("## 与 v1（纯文本层口径）对比\n")
-        L.append("| 样本 | v1 命中 | v2 命中 |")
+        L.append("| 样本 | v1 命中 | v3 命中 |")
         L.append("|---|---|---|")
         for c in r["v1_comparison"]:
-            L.append(f"| {c['sample_id']} | {c['v1_hit']} | {c['v2_hit']} |")
+            L.append(f"| {c['sample_id']} | {c['v1_hit']} | {c['v3_hit']} |")
         L.append("")
     return "\n".join(L)
 
@@ -538,7 +624,7 @@ def main(argv: list[str] | None = None) -> dict:
     use_ocr = args.ocr or os.getenv("ENABLE_OCR") == "1"
     r = run_external(args.truth, args.out, use_ocr=use_ocr)
     print(render_md(r))
-    stem = "external_validity_v2" if use_ocr else "external_validity"
+    stem = "external_validity_v3" if use_ocr else "external_validity"
     print(f"结果已落盘: {args.out / (stem + '.json')} / {args.out / (stem + '.md')}")
     return r
 

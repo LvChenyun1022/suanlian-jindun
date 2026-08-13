@@ -1,6 +1,6 @@
 {
   "test": "external_validity_mini_test",
-  "generated_at": "2026-08-12T18:59:21.696748+00:00",
+  "generated_at": "2026-08-13T04:08:41.815880+00:00",
   "ocr_enabled": false,
   "ocr_note": "OCR 未启用（--ocr 或 ENABLE_OCR=1 可开启）；扫描件无文本层属预期行为边界。",
   "samples_dir": "data/external/（不入库、不上传、不再分发）",
@@ -462,6 +462,7 @@
     "fields_present": 34,
     "overall_extraction_rate": 0.2941,
     "ocr_low_confidence_fields": 0,
+    "validation_review_fields": 0,
     "failure_mode_counts": {
       "扫描页无文本层": 17,
       "字段缺失": 6,

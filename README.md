@@ -186,6 +186,29 @@ GF-2025-2616 数据委托处理服务合同，空白条款全部填入合成"示
 **无回归证明**：v2 全部改动后 `pytest -q tests/` 53 绿、`run_eval --mock` 9/9 达标、
 v1 口径复跑与原结果逐字段完全一致（证明附于 v2 报告末节）。
 
+### v2 后续改进：字段级交叉校验（v3，2026-08-13）
+
+v2 暴露出"OCR 自信误识别静默通过"的风险（contract_C 期限 144→44，低置信路由未触发），
+v3 为金额与期限两个高风险字段增加"自我证伪"能力
+（[eval/results/external_validity_v3.md](eval/results/external_validity_v3.md)，
+复跑：`python -m eval.run_external --ocr`）：
+
+- **金额大写/小写交叉校验**（`src/parsing/chinese_amount.py` + `src/validation/`）：
+  中文大写金额解析（零壹贰…万亿/角分/整正）、阿拉伯金额归一化（¥/￥/RMB/万元/亿元）；
+  两种写法不一致 → `amount_mismatch_daxie`，字段置信度置 0 转人审；只有一种写法 →
+  记录 `amount_crosscheck_unavailable` 不惩罚；A/B/C 三份合同的大写/小写均交叉证实
+  （7460 万/3.8 亿/4.35 亿 ✓）；
+- **期限边界与一致性**：期限解析增强（阿拉伯/中文数字、年×12、【】括号）、有效区间
+  [1,120] 个月可配置（`config/settings.py`，依据：融资租赁常见 1 个月–10 年）、
+  多值冲突与起止日期一致性检查 → `term_out_of_bounds` / `term_inconsistent` 转人审；
+- **触发实例**：contract_C `term_months` 被 `term_inconsistent`（44 vs 144 冲突）拦截
+  转人审（真阳，v2 的静默错值被根除）；contract_B 180 个月租期被 `term_out_of_bounds`
+  拦截（假阳·规则边界，风电 15 年租期真实存在，人审可放行）；
+- **集成**：validation 阶段挂在解析层之后（`stage_validate`），标记进入 pipeline state、
+  SQLite 审计日志（原始值掩码）与 Streamlit 人审路由面板（显示原因码）；
+- **无回归**：pytest 116 绿（+63 项新测）、mock 9/9 不变（合成集 0 误伤）、
+  v1 口径复跑逐字段一致；v2→v3 仅 2 处字段状态变化（即上述两例）。
+
 ## 文档与脚本
 
 - [SPEC.md](SPEC.md) — 系统边界、12 模块、schema、指标口径（唯一规格依据）

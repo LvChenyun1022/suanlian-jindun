@@ -107,6 +107,37 @@ def stage_parse(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
     return state
 
 
+def stage_validate(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
+    """字段级交叉校验（v3）：金额大写/小写交叉 + 期限边界/一致性。
+
+    挂在解析层之后，不改变抽取接口；review 级标记 = 字段置信度置 0 转人审
+    （与 ocr_low_confidence 同路由），审计日志记录原始值掩码。
+    """
+    from .parsing.reader import PdfTextReader
+    from .validation import validate_document
+
+    flags = []
+    for doc_kind in ("contract", "invoice"):
+        rel = state.files.get(doc_kind)
+        if not rel:
+            continue
+        reader = PdfTextReader(rt.base_dir / rel)
+        text = reader.full_text()
+        reader.close()
+        flags += validate_document(text, doc_kind)
+    state.validation_flags = flags
+    rt.audit.log(
+        "validation", {"case_id": state.case_id},
+        {"review": [f.reason_code for f in flags if f.severity == "review"],
+         "info": [f.reason_code for f in flags if f.severity == "info"],
+         "raw_masked": [f.raw_masked for f in flags if f.severity == "review"]},
+        case_id=state.case_id,
+        detail="字段级交叉校验：" + ("；".join(
+            f"{f.field_name}/{f.reason_code}" for f in flags if f.severity == "review"
+        ) or "无 review 标记"))
+    return state
+
+
 def stage_verify(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
     state.verification = verify_case(
         state.case_id, state.contract, state.invoice, state.lease_items, state.evidences,
@@ -189,6 +220,7 @@ def stage_report(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
 _STAGES = [
     ("guardrail_in", stage_guardrail_in),
     ("parse", stage_parse),
+    ("validate", stage_validate),
     ("verify", stage_verify),
     ("rules", stage_rules),
     ("stress", stage_stress),
@@ -296,6 +328,10 @@ def main(argv: list[str] | None = None) -> None:
     print(f"预警: {[a.alert_type + '/' + a.level for a in state.alerts] or '无'}")
     if state.verification:
         print(f"核验: 通过 {state.verification.passed_count} / 未通过 {state.verification.failed_count}")
+    review_flags = [f for f in state.validation_flags if f.severity == "review"]
+    if review_flags:
+        print("字段级交叉校验（转人审）: " + "；".join(
+            f"{f.field_name}/{f.reason_code}" for f in review_flags))
     print(f"报告: {state.report_path}")
     print(f"      {state.report_html_path}")
     print(f"审计包: {state.audit_zip_path}")

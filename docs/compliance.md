@@ -11,6 +11,7 @@
 |---|---|---|---|
 | 高风险场景不得由 AI 自动放行，必须人工介入 | 风险评分 0–100 三段路由：**<60 建议通过 / 60–90 强制"待人工复核"（系统不得自动放行）/ >90 建议拒绝并给出理由** | `src/scoring/`、`config/scoring.yaml`（显式权重 + 红线兜底：high 规则命中总分 ≥60 强制人审，block 命中 ≥91 建议拒绝） | Demo 人审面板（60–90 分案件必须点击"人工复核：通过/拒绝"才结案）；`pytest tests/test_scoring*` |
 | 人工操作必须留痕、可审计 | 人审按钮点击以 `manual_op` 事件写入 SQLite 哈希链审计日志（操作人/动作/理由/时间） | `app/streamlit_app.py`、`src/audit/sqlite_store.py` | 审计时间线页面；审计包 zip 内含 `manual_op` 记录 |
+| 高风险场景的**字段级**工程化：可疑字段值不得静默进入评分/规则，须先经人工确认 | **字段级交叉校验 + 人审路由**：金额大写/小写不一致（`amount_mismatch_daxie`）、期限越界/多值冲突（`term_out_of_bounds`/`term_inconsistent`）→ 字段置信度置 0 并转人审（与 ocr_low_confidence 同路由），绝不静默替换值 | `src/validation/field_validation.py`、`src/parsing/chinese_amount.py`、`src/pipeline.py`（`stage_validate`） | v3 实测：contract_C 期限"44 vs 144"OCR 冲突被拦截转人审（真阳）；`pytest tests/test_field_validation*`、eval/results/external_validity_v3.md |
 
 ## 2. 日志保存 → SQLite 不可变哈希链审计日志
 

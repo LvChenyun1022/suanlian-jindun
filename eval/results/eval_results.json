@@ -31,8 +31,8 @@
   "evidence_coverage": 1.0,
   "evidence_fields": "940/940",
   "adversarial_rate": 1.0,
-  "case_seconds_avg": 0.194,
-  "case_seconds_max": 0.319,
+  "case_seconds_avg": 0.198,
+  "case_seconds_max": 0.346,
   "system_llm_tokens": 0,
   "system_cost_yuan_total": 0.0,
   "system_cost_yuan_per_case": 0.0,
@@ -83,7 +83,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.319,
+      "elapsed": 0.346,
       "errors": []
     },
     "case_0002": {
@@ -95,7 +95,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.184,
+      "elapsed": 0.19,
       "errors": []
     },
     "case_0003": {
@@ -105,7 +105,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.216,
+      "elapsed": 0.227,
       "errors": []
     },
     "case_0004": {
@@ -117,7 +117,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.193,
+      "elapsed": 0.192,
       "errors": []
     },
     "case_0005": {
@@ -127,7 +127,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.183,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0006": {
@@ -147,7 +147,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.193,
       "errors": []
     },
     "case_0008": {
@@ -159,7 +159,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.19,
+      "elapsed": 0.188,
       "errors": []
     },
     "case_0009": {
@@ -179,7 +179,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.199,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0011": {
@@ -189,7 +189,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.189,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0012": {
@@ -199,7 +199,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.202,
+      "elapsed": 0.193,
       "errors": []
     },
     "case_0013": {
@@ -209,7 +209,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.19,
       "errors": []
     },
     "case_0014": {
@@ -219,7 +219,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.197,
+      "elapsed": 0.188,
       "errors": []
     },
     "case_0015": {
@@ -229,7 +229,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.19,
+      "elapsed": 0.181,
       "errors": []
     },
     "case_0016": {
@@ -239,7 +239,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.188,
+      "elapsed": 0.182,
       "errors": []
     },
     "case_0017": {
@@ -251,7 +251,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.195,
+      "elapsed": 0.184,
       "errors": []
     },
     "case_0018": {
@@ -263,7 +263,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.184,
+      "elapsed": 0.176,
       "errors": []
     },
     "case_0019": {
@@ -273,7 +273,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.19,
+      "elapsed": 0.181,
       "errors": []
     },
     "case_0020": {
@@ -283,7 +283,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.19,
+      "elapsed": 0.187,
       "errors": []
     },
     "case_0021": {
@@ -296,7 +296,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.179,
+      "elapsed": 0.19,
       "errors": []
     },
     "case_0022": {
@@ -306,7 +306,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.179,
+      "elapsed": 0.208,
       "errors": []
     },
     "case_0023": {
@@ -316,7 +316,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.199,
+      "elapsed": 0.185,
       "errors": []
     },
     "case_0024": {
@@ -326,7 +326,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.19,
+      "elapsed": 0.201,
       "errors": []
     },
     "case_0025": {
@@ -336,7 +336,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.185,
+      "elapsed": 0.189,
       "errors": []
     },
     "case_0026": {
@@ -346,7 +346,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.19,
+      "elapsed": 0.187,
       "errors": []
     },
     "case_0027": {
@@ -356,7 +356,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.189,
+      "elapsed": 0.188,
       "errors": []
     },
     "case_0028": {
@@ -386,7 +386,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.189,
+      "elapsed": 0.198,
       "errors": []
     },
     "case_0031": {
@@ -396,7 +396,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.192,
       "errors": []
     },
     "case_0032": {
@@ -408,7 +408,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.189,
+      "elapsed": 0.199,
       "errors": []
     },
     "case_0033": {
@@ -418,7 +418,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.19,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0034": {
@@ -428,7 +428,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.188,
+      "elapsed": 0.186,
       "errors": []
     },
     "case_0035": {
@@ -451,7 +451,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.2,
+      "elapsed": 0.207,
       "errors": []
     },
     "case_0037": {
@@ -461,7 +461,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.196,
       "errors": []
     },
     "case_0038": {
@@ -474,7 +474,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.21,
+      "elapsed": 0.197,
       "errors": []
     },
     "case_0039": {
@@ -484,7 +484,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.196,
       "errors": []
     },
     "case_0040": {
@@ -494,7 +494,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.192,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0041": {
@@ -507,7 +507,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.203,
+      "elapsed": 0.224,
       "errors": []
     },
     "case_0042": {
@@ -517,7 +517,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.209,
+      "elapsed": 0.198,
       "errors": []
     },
     "case_0043": {
@@ -529,7 +529,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.202,
+      "elapsed": 0.195,
       "errors": []
     },
     "case_0044": {
@@ -539,7 +539,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.199,
+      "elapsed": 0.195,
       "errors": []
     },
     "case_0045": {
@@ -552,7 +552,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.2,
+      "elapsed": 0.208,
       "errors": []
     },
     "case_0046": {
@@ -562,7 +562,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0047": {
@@ -572,7 +572,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.19,
       "errors": []
     },
     "case_0048": {
@@ -584,7 +584,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.192,
+      "elapsed": 0.189,
       "errors": []
     },
     "case_0049": {
@@ -594,7 +594,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.198,
       "errors": []
     },
     "case_0050": {
@@ -606,7 +606,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.19,
+      "elapsed": 0.186,
       "errors": []
     },
     "case_0051": {
@@ -618,7 +618,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.193,
+      "elapsed": 0.189,
       "errors": []
     },
     "case_0052": {
@@ -630,7 +630,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.2,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0053": {
@@ -640,7 +640,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.187,
+      "elapsed": 0.195,
       "errors": []
     },
     "case_0054": {
@@ -650,7 +650,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.188,
+      "elapsed": 0.194,
       "errors": []
     },
     "case_0055": {
@@ -660,7 +660,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.188,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0056": {
@@ -670,7 +670,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.179,
+      "elapsed": 0.19,
       "errors": []
     },
     "case_0057": {
@@ -680,7 +680,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.186,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0058": {
@@ -693,7 +693,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.187,
+      "elapsed": 0.192,
       "errors": []
     },
     "case_0059": {
@@ -703,7 +703,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.196,
+      "elapsed": 0.199,
       "errors": []
     },
     "case_0060": {
@@ -715,7 +715,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.215,
+      "elapsed": 0.214,
       "errors": []
     },
     "case_0061": {
@@ -725,7 +725,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0062": {
@@ -735,7 +735,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.204,
+      "elapsed": 0.194,
       "errors": []
     },
     "case_0063": {
@@ -745,7 +745,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.204,
       "errors": []
     },
     "case_0064": {
@@ -755,7 +755,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.188,
+      "elapsed": 0.204,
       "errors": []
     },
     "case_0065": {
@@ -765,7 +765,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.186,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0066": {
@@ -775,7 +775,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.192,
+      "elapsed": 0.199,
       "errors": []
     },
     "case_0067": {
@@ -785,7 +785,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.192,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0068": {
@@ -795,7 +795,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.208,
       "errors": []
     },
     "case_0069": {
@@ -805,7 +805,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.197,
       "errors": []
     },
     "case_0070": {
@@ -815,7 +815,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.203,
+      "elapsed": 0.205,
       "errors": []
     },
     "case_0071": {
@@ -825,7 +825,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.199,
+      "elapsed": 0.196,
       "errors": []
     },
     "case_0072": {
@@ -837,7 +837,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.201,
+      "elapsed": 0.195,
       "errors": []
     },
     "case_0073": {
@@ -849,7 +849,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.198,
+      "elapsed": 0.192,
       "errors": []
     },
     "case_0074": {
@@ -859,7 +859,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.207,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0075": {
@@ -869,7 +869,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.198,
       "errors": []
     },
     "case_0076": {
@@ -882,7 +882,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.19,
+      "elapsed": 0.194,
       "errors": []
     },
     "case_0077": {
@@ -892,7 +892,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.196,
+      "elapsed": 0.19,
       "errors": []
     },
     "case_0078": {
@@ -902,7 +902,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.185,
+      "elapsed": 0.199,
       "errors": []
     },
     "case_0079": {
@@ -915,7 +915,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.217,
+      "elapsed": 0.219,
       "errors": []
     },
     "case_0080": {
@@ -925,7 +925,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.193,
+      "elapsed": 0.204,
       "errors": []
     },
     "case_0081": {
@@ -935,7 +935,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.192,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0082": {
@@ -945,7 +945,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.191,
+      "elapsed": 0.203,
       "errors": []
     },
     "case_0083": {
@@ -955,7 +955,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.185,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0084": {
@@ -967,7 +967,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.206,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0085": {
@@ -977,7 +977,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.2,
+      "elapsed": 0.196,
       "errors": []
     },
     "case_0086": {
@@ -987,7 +987,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.189,
+      "elapsed": 0.193,
       "errors": []
     },
     "case_0087": {
@@ -1000,7 +1000,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.183,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0088": {
@@ -1010,7 +1010,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.183,
+      "elapsed": 0.199,
       "errors": []
     },
     "case_0089": {
@@ -1020,7 +1020,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.183,
+      "elapsed": 0.198,
       "errors": []
     },
     "case_0090": {
@@ -1030,7 +1030,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.184,
+      "elapsed": 0.207,
       "errors": []
     },
     "case_0091": {
@@ -1040,7 +1040,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.185,
+      "elapsed": 0.204,
       "errors": []
     },
     "case_0092": {
@@ -1052,7 +1052,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.183,
+      "elapsed": 0.191,
       "errors": []
     },
     "case_0093": {
@@ -1064,7 +1064,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.186,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0094": {
@@ -1077,7 +1077,7 @@
         "R77-003",
         "R77-005"
       ],
-      "elapsed": 0.189,
+      "elapsed": 0.2,
       "errors": []
     },
     "case_0095": {
@@ -1089,7 +1089,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.196,
+      "elapsed": 0.204,
       "errors": []
     },
     "case_0096": {
@@ -1101,7 +1101,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.196,
+      "elapsed": 0.202,
       "errors": []
     },
     "case_0097": {
@@ -1111,7 +1111,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.189,
+      "elapsed": 0.207,
       "errors": []
     },
     "case_0098": {
@@ -1121,7 +1121,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.206,
+      "elapsed": 0.23,
       "errors": []
     },
     "case_0099": {
@@ -1133,7 +1133,7 @@
       "rules": [
         "R77-003"
       ],
-      "elapsed": 0.19,
+      "elapsed": 0.208,
       "errors": []
     },
     "case_0100": {
@@ -1143,7 +1143,7 @@
       "grade": "pass",
       "verify_failed": 0,
       "rules": [],
-      "elapsed": 0.195,
+      "elapsed": 0.206,
       "errors": []
     }
   },
