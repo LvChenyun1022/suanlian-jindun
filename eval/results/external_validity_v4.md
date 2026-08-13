@@ -20,7 +20,7 @@
 
 # 外部效度测试报告 v4（数电票票样归因修正 + 发票版式首次有效测量）
 
-- 生成时间：2026-08-13T07:45:53.897538+00:00
+- 生成时间：2026-08-13T08:34:53.421161+00:00
 - 样本目录：data/external/（不入库、不上传、不再分发）
 - OCR：OCR（paddleocr 3.7 + paddlepaddle 3.2.2，250DPI，仅关键页）已启用；低置信字段转人工路由（ocr_low_confidence）；字段级交叉校验（金额大写/小写、期限边界/一致性）已启用，review 级标记转人审。
 - 合规：输出不含银行账号/电话/身份证类敏感字段原文；样本以来源类型+渠道+日期描述。
@@ -96,7 +96,7 @@
 | invoice_filled_synthetic | amount_incl_tax | 是 | 是 | ✅ |  |
 | invoice_filled_synthetic | tax_amount | 是 | 是 | ✅ |  |
 
-### 字段级交叉校验标记（v3 新增）
+### 字段级交叉校验标记（v4）
 
 | 样本 | 字段 | 原因码 | 级别 | 说明 |
 |---|---|---|---|---|
@@ -143,7 +143,7 @@
 
 ## v2 → 本轮（external_validity_v4）字段级状态变化（交叉校验拦截记录）
 
-| 样本 | 字段 | v2 状态 | v3 状态 |
+| 样本 | 字段 | v2 状态 | 本轮状态 |
 |---|---|---|---|
 | contract_B | term_months | ok/ | validation_review/term_out_of_bounds |
 | contract_C | term_months | fail/ocr 误识别（字形混淆） | validation_review/term_inconsistent |
@@ -165,3 +165,35 @@
 | template_sale_filled | 5/6 | 5/6 |
 | template_data_service_filled | 5/5 | 5/5 |
 | invoice_filled_synthetic | —（v3 新增样本） | 6/6 |
+
+## 无回归证明（2026-08-13T08:35:29.378021+00:00 实际补跑）
+
+| 命令 | 退出码 | 末行输出 |
+|---|---|---|
+| `-m pytest -q tests/` | 0 | 116 passed in 13.32s |
+| `-m eval.run_eval --cases data/cases --mock` | 0 | 结果已落盘: eval\results\eval_results.json / eval\results\eval_results.md |
+
+**结论：两项全部通过 ✓**
+
+<details><summary><code>-m pytest -q tests/</code> 末尾输出</summary>
+
+```
+........................................................................ [ 62%]
+............................................                             [100%]
+116 passed in 13.32s
+```
+
+</details>
+
+<details><summary><code>-m eval.run_eval --cases data/cases --mock</code> 末尾输出</summary>
+
+```
+| a_chengxing | 10 | 100.00% | 0.00% |
+| b_multi_pledge | 10 | 100.00% | 0.00% |
+| c_circular_trade | 10 | 100.00% | 100.00% |
+### 未达标项
+无。
+结果已落盘: eval\results\eval_results.json / eval\results\eval_results.md
+```
+
+</details>

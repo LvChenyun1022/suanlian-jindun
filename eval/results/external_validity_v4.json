@@ -1,6 +1,6 @@
 {
   "test": "external_validity_v4",
-  "generated_at": "2026-08-13T07:45:53.897538+00:00",
+  "generated_at": "2026-08-13T08:34:53.421161+00:00",
   "ocr_enabled": true,
   "ocr_note": "OCR（paddleocr 3.7 + paddlepaddle 3.2.2，250DPI，仅关键页）已启用；低置信字段转人工路由（ocr_low_confidence）；字段级交叉校验（金额大写/小写、期限边界/一致性）已启用，review 级标记转人审。",
   "samples_dir": "data/external/（不入库、不上传、不再分发）",

@@ -584,7 +584,9 @@ def render_md(r: dict, title: str | None = None, stem: str | None = None) -> str
         for s in r["samples"] for vf in s.get("validation_flags", [])
     ]
     if flag_rows:
-        L.append("### 字段级交叉校验标记（v3 新增）\n")
+        short = (stem or "external_validity_v3").replace("external_validity", "").lstrip("_")
+        flag_ver = "v3 新增" if short in ("", "v3") else short
+        L.append(f"### 字段级交叉校验标记（{flag_ver}）\n")
         L.append("| 样本 | 字段 | 原因码 | 级别 | 说明 |")
         L.append("|---|---|---|---|---|")
         for sid, vf in flag_rows:
@@ -610,7 +612,7 @@ def render_md(r: dict, title: str | None = None, stem: str | None = None) -> str
     cur = stem or ("external_validity_v3" if r["ocr_enabled"] else "external_validity")
     if r.get("v2_to_v3_changes"):
         L.append(f"## v2 → 本轮（{cur}）字段级状态变化（交叉校验拦截记录）\n")
-        L.append("| 样本 | 字段 | v2 状态 | v3 状态 |")
+        L.append("| 样本 | 字段 | v2 状态 | 本轮状态 |")
         L.append("|---|---|---|---|")
         for c in r["v2_to_v3_changes"]:
             L.append(f"| {c['sample_id']} | {c['field']} | {c['v2_status']} | {c['v3_status']} |")
@@ -625,6 +627,37 @@ def render_md(r: dict, title: str | None = None, stem: str | None = None) -> str
     return "\n".join(L)
 
 
+def run_regression_proof(out_dir: Path, stem: str) -> str:
+    """补跑 pytest + mock 全量评测，把真实结果追加到报告末尾（可复跑）。"""
+    import subprocess
+    import sys
+
+    rows: list[tuple[str, str, int, str]] = []
+    env = {**os.environ, "PYTHONIOENCODING": "utf-8"}
+    for cmd in ([sys.executable, "-m", "pytest", "-q", "tests/"],
+                [sys.executable, "-m", "eval.run_eval", "--cases", "data/cases", "--mock"]):
+        p = subprocess.run(cmd, capture_output=True, timeout=600, env=env)
+        out = ((p.stdout or b"") + (p.stderr or b"")).decode("utf-8", errors="replace")
+        tail_lines = [l for l in out.strip().splitlines() if l.strip()]
+        tail = tail_lines[-1] if tail_lines else ""
+        rows.append((" ".join(cmd[1:]), tail, p.returncode,
+                     "\n".join(tail_lines[-6:])))
+    ok = all(rc == 0 for _, _, rc, _ in rows)
+    L = ["", f"## 无回归证明（{datetime.now(timezone.utc).isoformat()} 实际补跑）", "",
+         "| 命令 | 退出码 | 末行输出 |", "|---|---|---|"]
+    for cmd, tail, rc, _ in rows:
+        L.append(f"| `{cmd}` | {rc} | {tail} |")
+    L += ["", f"**结论：{'两项全部通过 ✓' if ok else '存在失败项 ✗'}**", ""]
+    for cmd, _, _, block in rows:
+        L += [f"<details><summary><code>{cmd}</code> 末尾输出</summary>", "",
+              "```", block, "```", "", "</details>", ""]
+    section = "\n".join(L)
+    md_path = Path(out_dir) / f"{stem}.md"
+    md_path.write_text(md_path.read_text(encoding="utf-8").rstrip() + "\n" + section,
+                       encoding="utf-8")
+    return section
+
+
 def main(argv: list[str] | None = None) -> dict:
     ap = argparse.ArgumentParser(prog="eval.run_external")
     ap.add_argument("--truth", type=Path, default=Path("eval/external_truth.jsonl"))
@@ -636,6 +669,8 @@ def main(argv: list[str] | None = None) -> dict:
     ap.add_argument("--title", default=None, help="报告标题（默认按模式自动选择）")
     ap.add_argument("--preamble-file", type=Path, default=None,
                     help="可选：报告开头追加的说明文件（如修正/归因说明）")
+    ap.add_argument("--regression-proof", action="store_true",
+                    help="报告生成后补跑 pytest + mock 全量评测，结果追加到报告末尾")
     args = ap.parse_args(argv)
     use_ocr = args.ocr or os.getenv("ENABLE_OCR") == "1"
     preamble = (args.preamble_file.read_text(encoding="utf-8")
@@ -645,6 +680,9 @@ def main(argv: list[str] | None = None) -> dict:
     print(render_md(r, title=args.title, stem=args.stem))
     stem = args.stem or ("external_validity_v3" if use_ocr else "external_validity")
     print(f"结果已落盘: {args.out / (stem + '.json')} / {args.out / (stem + '.md')}")
+    if args.regression_proof:
+        section = run_regression_proof(args.out, stem)
+        print(section)
     return r
 
 
