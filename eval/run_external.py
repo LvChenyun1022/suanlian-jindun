@@ -102,7 +102,11 @@ GENERIC_EXTRACTORS: dict[str, list[str]] = {
         r"买受人\s*[：:]\s*" + _PARTY,
     ],
     "amount_incl_tax": [r"价税合计[^0-9¥￥]{0,15}[¥￥]?\s*" + _NUM],
-    "tax_amount": [r"税\s*额[：:\s]*[¥￥]?\s*" + _NUM],
+    "tax_amount": [
+        r"税\s*额[：:\s]*[¥￥]?\s*" + _NUM,
+        # 发票通用版式：合计行双数值（金额、税额），取第二值为税额
+        r"合\s*计[^0-9\n]{0,15}(?:[\d][\d,]*(?:\.\d{1,2})?)[^0-9\n]{0,15}" + _NUM,
+    ],
 }
 
 _NUMERIC_FIELDS = {"amount", "amount_incl_tax", "tax_amount", "term_months",
@@ -230,7 +234,10 @@ def _ocr_text(pdf_path: Path, pages: list[int] | None) -> tuple[str, dict]:
 
 
 def run_external(truth_path: str | Path, out_dir: str | Path,
-                 use_ocr: bool = False) -> dict:
+                 use_ocr: bool = False, stem: str | None = None,
+                 title: str | None = None, preamble: str | None = None) -> dict:
+    if stem is None:
+        stem = "external_validity_v3" if use_ocr else "external_validity"
     truths = [
         json.loads(l)
         for l in Path(truth_path).read_text(encoding="utf-8").splitlines()
@@ -346,7 +353,7 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
         sample_flags: list[dict] = []
         if use_ocr:
             eff_text = ocr_text if need_ocr else full_text
-            doc_kind = "invoice" if t["sample_id"] == "invoice_style" else "contract"
+            doc_kind = "invoice" if t["sample_id"].startswith("invoice") else "contract"
             for vf in validate_document(eff_text, doc_kind):
                 entry = {"field_name": vf.field_name, "reason_code": vf.reason_code,
                          "severity": vf.severity, "detail": vf.detail,
@@ -389,7 +396,7 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
         # 只有未结构化异常才算降级失败。
         degradation: dict
         try:
-            dt = DocType.INVOICE if t["sample_id"] == "invoice_style" else DocType.CONTRACT
+            dt = DocType.INVOICE if t["sample_id"].startswith("invoice") else DocType.CONTRACT
             parse_document(path, dt, mock_settings)
             if reader.has_text_layer:
                 degradation = {"graceful": True, "outcome": "parsed_successfully",
@@ -429,7 +436,7 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
     total_present = sum(int(s["fields_hit"].split("/")[1]) for s in samples)
     total_hit = sum(int(s["fields_hit"].split("/")[0]) for s in samples)
     result = {
-        "test": "external_validity_v3" if use_ocr else "external_validity_mini_test",
+        "test": stem,
         "generated_at": datetime.now(timezone.utc).isoformat(),
         "ocr_enabled": ocr_active,
         "ocr_note": (
@@ -495,10 +502,12 @@ def run_external(truth_path: str | Path, out_dir: str | Path,
 
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
-    stem = "external_validity_v3" if use_ocr else "external_validity"
+    md_text = render_md(result, title=title, stem=stem)
+    if preamble:
+        md_text = preamble.rstrip() + "\n\n---\n\n" + md_text
     (out / f"{stem}.json").write_text(
         json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
-    (out / f"{stem}.md").write_text(render_md(result), encoding="utf-8")
+    (out / f"{stem}.md").write_text(md_text, encoding="utf-8")
     return result
 
 
@@ -510,10 +519,11 @@ def _src_desc(s: dict) -> str:
     return f"{src['type']}（{src['channel']}，{src['date']}）"
 
 
-def render_md(r: dict) -> str:
+def render_md(r: dict, title: str | None = None, stem: str | None = None) -> str:
     L: list[str] = []
-    title = ("外部效度测试报告 v3（OCR + 字段级交叉校验）" if r["ocr_enabled"]
-             else "外部效度 mini-test 报告")
+    if title is None:
+        title = ("外部效度测试报告 v3（OCR + 字段级交叉校验）" if r["ocr_enabled"]
+                 else "外部效度 mini-test 报告")
     L.append(f"# {title}\n")
     L.append(f"- 生成时间：{r['generated_at']}")
     L.append(f"- 样本目录：{r['samples_dir']}")
@@ -597,16 +607,17 @@ def render_md(r: dict) -> str:
              f"交叉校验转人审：{sm.get('validation_review_fields', 0)}；"
              f"优雅降级全部正常：{'是' if sm['degradation_all_graceful'] else '否'}**")
     L.append("")
+    cur = stem or ("external_validity_v3" if r["ocr_enabled"] else "external_validity")
     if r.get("v2_to_v3_changes"):
-        L.append("## v2 → v3 字段级状态变化（交叉校验拦截记录）\n")
+        L.append(f"## v2 → 本轮（{cur}）字段级状态变化（交叉校验拦截记录）\n")
         L.append("| 样本 | 字段 | v2 状态 | v3 状态 |")
         L.append("|---|---|---|---|")
         for c in r["v2_to_v3_changes"]:
             L.append(f"| {c['sample_id']} | {c['field']} | {c['v2_status']} | {c['v3_status']} |")
         L.append("")
     if r.get("v1_comparison"):
-        L.append("## 与 v1（纯文本层口径）对比\n")
-        L.append("| 样本 | v1 命中 | v3 命中 |")
+        L.append(f"## 与 v1（纯文本层口径）对比\n")
+        L.append(f"| 样本 | v1 命中 | 本轮（{cur}）命中 |")
         L.append("|---|---|---|")
         for c in r["v1_comparison"]:
             L.append(f"| {c['sample_id']} | {c['v1_hit']} | {c['v3_hit']} |")
@@ -620,11 +631,19 @@ def main(argv: list[str] | None = None) -> dict:
     ap.add_argument("--out", type=Path, default=Path("eval/results"))
     ap.add_argument("--ocr", action="store_true",
                     help="启用 PaddleOCR 可选路径复测无文本层样本（输出 *_v2.*）")
+    ap.add_argument("--stem", default=None,
+                    help="输出文件名前缀（默认 external_validity / external_validity_v3）")
+    ap.add_argument("--title", default=None, help="报告标题（默认按模式自动选择）")
+    ap.add_argument("--preamble-file", type=Path, default=None,
+                    help="可选：报告开头追加的说明文件（如修正/归因说明）")
     args = ap.parse_args(argv)
     use_ocr = args.ocr or os.getenv("ENABLE_OCR") == "1"
-    r = run_external(args.truth, args.out, use_ocr=use_ocr)
-    print(render_md(r))
-    stem = "external_validity_v3" if use_ocr else "external_validity"
+    preamble = (args.preamble_file.read_text(encoding="utf-8")
+                if args.preamble_file else None)
+    r = run_external(args.truth, args.out, use_ocr=use_ocr,
+                     stem=args.stem, title=args.title, preamble=preamble)
+    print(render_md(r, title=args.title, stem=args.stem))
+    stem = args.stem or ("external_validity_v3" if use_ocr else "external_validity")
     print(f"结果已落盘: {args.out / (stem + '.json')} / {args.out / (stem + '.md')}")
     return r
 

@@ -1,0 +1,880 @@
+{
+  "test": "external_validity_v4",
+  "generated_at": "2026-08-13T07:45:53.897538+00:00",
+  "ocr_enabled": true,
+  "ocr_note": "OCR（paddleocr 3.7 + paddlepaddle 3.2.2，250DPI，仅关键页）已启用；低置信字段转人工路由（ocr_low_confidence）；字段级交叉校验（金额大写/小写、期限边界/一致性）已启用，review 级标记转人审。",
+  "samples_dir": "data/external/（不入库、不上传、不再分发）",
+  "samples": [
+    {
+      "sample_id": "contract_A",
+      "source": {
+        "type": "售后回租合同特别条款（真实公章+手写签名扫描版式）",
+        "channel": "港交所披露易",
+        "date": "2026-06"
+      },
+      "annotation_method": "人工视觉阅读全部 4 页（无文本层）",
+      "text_layer": {
+        "pages": 4,
+        "backend": "pdfplumber",
+        "has_text_layer": false,
+        "text_layer_page_ratio": 0.0,
+        "is_likely_scanned": true,
+        "total_chars": 0
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lessor": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lessee": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "term_months": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lease_list_rows": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "附件一《租赁物清单》未包含在该披露文件节选中（条款页引用其存在）"
+        }
+      },
+      "extraction_rate": 1.0,
+      "fields_hit": "5/5",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_NO_TEXT_LAYER",
+        "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      },
+      "validation_flags": [
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_match",
+          "severity": "info",
+          "detail": "大写/小写交叉校验通过（74600000）",
+          "raw_masked": "大写=【柒仟肆佰陆拾万】元整 小写=¥【74,60*,00*.00】元"
+        },
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.租赁本金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.保证金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=【叁佰叁拾伍万柒仟】元整 小写=无"
+        },
+        {
+          "field_name": "contract.保证金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        }
+      ],
+      "ocr": {
+        "pages_ocr": 4,
+        "seconds_total": 293.01,
+        "seconds_per_page": 73.25,
+        "key_pages_only": true
+      }
+    },
+    {
+      "sample_id": "contract_B",
+      "source": {
+        "type": "售后回租合同（专用条款大表式版式，含骑缝章与横排清单）",
+        "channel": "港交所披露易",
+        "date": "2025-09"
+      },
+      "annotation_method": "人工视觉阅读关键页（封面/目录/专用条款 p1-5、签署页 p30、清单 p31-42，无文本层）",
+      "text_layer": {
+        "pages": 56,
+        "backend": "pdfplumber",
+        "has_text_layer": false,
+        "text_layer_page_ratio": 0.0,
+        "is_likely_scanned": true,
+        "total_chars": 0
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lessor": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lessee": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "term_months": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": false,
+          "status": "validation_review",
+          "failure_mode": "term_out_of_bounds",
+          "note": "期限 180 个月越出有效区间 [1, 120]（融资租赁业务常见 1 个月–10 年），转人审（字段置信度置 0，转人审）"
+        },
+        "lease_list_rows": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "跨页表格断裂",
+          "note": "OCR 复测未命中"
+        }
+      },
+      "extraction_rate": 0.6667,
+      "fields_hit": "4/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_NO_TEXT_LAYER",
+        "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      },
+      "validation_flags": [
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=【1"
+        },
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=\n7"
+        },
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=【12***"
+        },
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=\n9"
+        },
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=\n10"
+        },
+        {
+          "field_name": "contract.概算租赁本金",
+          "reason_code": "amount_crosscheck_match",
+          "severity": "info",
+          "detail": "大写/小写交叉校验通过（380000000）",
+          "raw_masked": "大写=【叁亿捌仟万元整 小写=￥【38*,00*,00*.00】"
+        },
+        {
+          "field_name": "contract.租赁本金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=\n11"
+        },
+        {
+          "field_name": "contract.转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.租赁物转让价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.租赁本金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=36*"
+        },
+        {
+          "field_name": "contract.租赁本金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=\n13"
+        },
+        {
+          "field_name": "contract.lease_term_months",
+          "reason_code": "term_out_of_bounds",
+          "severity": "review",
+          "detail": "期限 180 个月越出有效区间 [1, 120]（融资租赁业务常见 1 个月–10 年），转人审",
+          "raw_masked": "【18*】月"
+        }
+      ],
+      "ocr": {
+        "pages_ocr": 5,
+        "seconds_total": 391.3,
+        "seconds_per_page": 78.26,
+        "key_pages_only": true
+      }
+    },
+    {
+      "sample_id": "contract_C",
+      "source": {
+        "type": "售后回租合同（全文对角水印+骑缝章，发票号级租赁物清单）",
+        "channel": "上市公司公告附件（东方财富 PDF 库）",
+        "date": "2022-05"
+      },
+      "annotation_method": "人工视觉阅读关键页（p1-3 重要条款、p25-30 附件区，无文本层）",
+      "text_layer": {
+        "pages": 35,
+        "backend": "pdfplumber",
+        "has_text_layer": false,
+        "text_layer_page_ratio": 0.0,
+        "is_likely_scanned": true,
+        "total_chars": 0
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lessor": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "lessee": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": "OCR 兜底命中"
+        },
+        "term_months": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": false,
+          "status": "validation_review",
+          "failure_mode": "term_inconsistent",
+          "note": "期限多值冲突 [44, 144]（月），不静默采信，转人审（字段置信度置 0，转人审）"
+        },
+        "lease_list_rows": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "跨页表格断裂",
+          "note": "OCR 复测未命中"
+        }
+      },
+      "extraction_rate": 0.6667,
+      "fields_hit": "4/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_NO_TEXT_LAYER",
+        "message": "购销合同 无文本层（疑似扫描件/图片型 PDF），解析层无法抽取；OCR 为预留能力（requirements-optional: paddleocr），未启用"
+      },
+      "validation_flags": [
+        {
+          "field_name": "contract.租金总额",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=叁分 小写=无"
+        },
+        {
+          "field_name": "contract.租赁成本",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=叁分 小写=无"
+        },
+        {
+          "field_name": "contract.租赁物价款",
+          "reason_code": "amount_crosscheck_match",
+          "severity": "info",
+          "detail": "大写/小写交叉校验通过（435000000）",
+          "raw_masked": "大写=人民币肆亿叁仟伍佰万元整 小写=￥43*******.00"
+        },
+        {
+          "field_name": "contract.租赁物价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.租赁物价款",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=1"
+        },
+        {
+          "field_name": "contract.租赁物价款",
+          "reason_code": "amount_crosscheck_match",
+          "severity": "info",
+          "detail": "大写/小写交叉校验通过（100）",
+          "raw_masked": "大写=人民币壹佰元整 小写=￥10*.00"
+        },
+        {
+          "field_name": "contract.租赁物价款",
+          "reason_code": "amount_crosscheck_match",
+          "severity": "info",
+          "detail": "大写/小写交叉校验通过（0）",
+          "raw_masked": "大写=人民币零元整 小写=￥0.00"
+        },
+        {
+          "field_name": "contract.保证金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.租赁本金",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        },
+        {
+          "field_name": "contract.lease_term_months",
+          "reason_code": "term_inconsistent",
+          "severity": "review",
+          "detail": "期限多值冲突 [44, 144]（月），不静默采信，转人审",
+          "raw_masked": "租赁期限：租赁期限为44个月；起租日后第14*个月"
+        }
+      ],
+      "ocr": {
+        "pages_ocr": 6,
+        "seconds_total": 571.21,
+        "seconds_per_page": 95.2,
+        "key_pages_only": true
+      }
+    },
+    {
+      "sample_id": "invoice_style",
+      "source": {
+        "type": "数电发票样式（官方票样，25 类票样为嵌入图片）",
+        "channel": "国家税务总局 2024 年第 11 号公告附件（由 doc 附件经 Word 转 PDF）",
+        "date": "2024-11"
+      },
+      "annotation_method": "文本层逐页检查 + 官方附件原件逐图人工核验（2026-08-13）：25 类票样全部为空白模板",
+      "text_layer": {
+        "pages": 16,
+        "backend": "pymupdf",
+        "has_text_layer": true,
+        "text_layer_page_ratio": 0.9375,
+        "is_likely_scanned": false,
+        "total_chars": 534
+      },
+      "fields": {
+        "invoice_no": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "字段值不存在（官方空白模板）：票面仅有'发票号码：'标签，值栏为空"
+        },
+        "invoice_date": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "字段值不存在（官方空白模板）：票面仅有'开票日期：'标签，值栏为空"
+        },
+        "seller": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "字段值不存在（官方空白模板）：票面仅有'名称：'标签，值栏为空"
+        },
+        "buyer": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "字段值不存在（官方空白模板）：票面仅有'名称：'标签，值栏为空"
+        },
+        "amount_incl_tax": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "字段值不存在（官方空白模板）：票面仅有'价税合计(大写)/(小写)'标签，值栏为空"
+        },
+        "tax_amount": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "字段值不存在（官方空白模板）：票面仅有'税额'列标签，值栏为空"
+        }
+      },
+      "extraction_rate": null,
+      "fields_hit": "0/0",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_FIELD_MISSING",
+        "message": "增值税专用发票 缺失必填字段: ['invoice_no', 'invoice_date', 'seller_name', 'buyer_name', 'item_name', 'quantity', 'unit_price', 'amou"
+      }
+    },
+    {
+      "sample_id": "template_sale_filled",
+      "source": {
+        "type": "官方买卖合同示范文本（GF-2000-0101 工业品买卖合同）+模拟填写",
+        "channel": "市场监管总局合同示范文本库（Word 版模拟填写后转 PDF）",
+        "date": "2026-08"
+      },
+      "annotation_method": "填写值即真值（eval/fill_templates.py 写入），位置经 PyMuPDF 检索确认",
+      "text_layer": {
+        "pages": 4,
+        "backend": "pymupdf",
+        "has_text_layer": true,
+        "text_layer_page_ratio": 1.0,
+        "is_likely_scanned": false,
+        "total_chars": 972
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "seller": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "buyer": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "term_days": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "item_name": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": false,
+          "status": "fail",
+          "failure_mode": "表格结构差异",
+          "note": "抽取到值但与真值不符"
+        }
+      },
+      "extraction_rate": 0.8333,
+      "fields_hit": "5/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_FIELD_MISSING",
+        "message": "购销合同 缺失必填字段: ['sign_date', 'seller_name', 'seller_credit_code', 'buyer_name', 'buyer_credit_code', 'subject', 'total_amo"
+      }
+    },
+    {
+      "sample_id": "template_data_service_filled",
+      "source": {
+        "type": "官方数据委托处理服务合同示范文本（GF-2025-2616）+模拟填写",
+        "channel": "国家数据局/市场监管总局（Word 版模拟填写后转 PDF）",
+        "date": "2026-08"
+      },
+      "annotation_method": "填写值即真值（eval/fill_templates.py 写入），位置经 PyMuPDF 检索确认",
+      "text_layer": {
+        "pages": 19,
+        "backend": "pymupdf",
+        "has_text_layer": true,
+        "text_layer_page_ratio": 1.0,
+        "is_likely_scanned": false,
+        "total_chars": 8492
+      },
+      "fields": {
+        "contract_no": {
+          "truth_present": false,
+          "extracted": false,
+          "matched": false,
+          "status": "expected_absent",
+          "failure_mode": "字段缺失",
+          "note": "该示范文本无合同编号字段"
+        },
+        "party_a": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "party_b": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "amount": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "term_end": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "item_name": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        }
+      },
+      "extraction_rate": 1.0,
+      "fields_hit": "5/5",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_FIELD_MISSING",
+        "message": "购销合同 缺失必填字段: ['contract_no', 'sign_date', 'seller_name', 'seller_credit_code', 'buyer_name', 'buyer_credit_code', 'subje"
+      },
+      "validation_flags": [
+        {
+          "field_name": "contract.费用总额",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=壹佰贰拾万元整 小写=无"
+        },
+        {
+          "field_name": "contract.费用总额",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=1"
+        },
+        {
+          "field_name": "contract.费用总额",
+          "reason_code": "amount_crosscheck_unavailable",
+          "severity": "info",
+          "detail": "仅一种金额写法，无法交叉校验（不惩罚）",
+          "raw_masked": "大写=无 小写=无"
+        }
+      ]
+    },
+    {
+      "sample_id": "invoice_filled_synthetic",
+      "source": {
+        "type": "数电发票填写版（官方空白票样底版+全合成填写，电子发票（增值税专用发票）版式）",
+        "channel": "底版：国家税务总局 2024 年第 11 号公告附件票样；填写：eval/make_filled_invoice.py",
+        "date": "2026-08"
+      },
+      "annotation_method": "填写值即真值（eval/make_filled_invoice.py 写入）；可见层仅填值，不可见文本层（render_mode=3）重建'标签+值'完整行，模拟真实数电票 born-digital PDF 文本层",
+      "text_layer": {
+        "pages": 1,
+        "backend": "pymupdf",
+        "has_text_layer": true,
+        "text_layer_page_ratio": 1.0,
+        "is_likely_scanned": false,
+        "total_chars": 387
+      },
+      "fields": {
+        "invoice_no": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "invoice_date": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "seller": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "buyer": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "amount_incl_tax": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        },
+        "tax_amount": {
+          "truth_present": true,
+          "extracted": true,
+          "matched": true,
+          "status": "ok",
+          "failure_mode": null,
+          "note": ""
+        }
+      },
+      "extraction_rate": 1.0,
+      "fields_hit": "6/6",
+      "degradation": {
+        "graceful": true,
+        "outcome": "structured_parse_error",
+        "code": "PARSE_FIELD_MISSING",
+        "message": "增值税专用发票 缺失必填字段: ['invoice_no', 'seller_name', 'buyer_name', 'item_name', 'quantity', 'unit_price', 'amount_excl_tax', 't"
+      },
+      "validation_flags": [
+        {
+          "field_name": "invoice.价税合计",
+          "reason_code": "amount_crosscheck_match",
+          "severity": "info",
+          "detail": "大写/小写交叉校验通过（1000000）",
+          "raw_masked": "大写=壹佰万元整 小写=¥1,00*,00*.00\n"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "samples_n": 7,
+    "fields_hit": 29,
+    "fields_present": 34,
+    "overall_extraction_rate": 0.8529,
+    "ocr_low_confidence_fields": 0,
+    "validation_review_fields": 2,
+    "failure_mode_counts": {
+      "跨页表格断裂": 2,
+      "表格结构差异": 1
+    },
+    "degradation_all_graceful": true
+  },
+  "sensitive_policy": "输出不含银行账号/电话/身份证类敏感字段原文；样本以来源类型+渠道+日期描述。",
+  "v1_comparison": [
+    {
+      "sample_id": "contract_A",
+      "v1_hit": "0/5",
+      "v3_hit": "5/5"
+    },
+    {
+      "sample_id": "contract_B",
+      "v1_hit": "0/6",
+      "v3_hit": "4/6"
+    },
+    {
+      "sample_id": "contract_C",
+      "v1_hit": "0/6",
+      "v3_hit": "4/6"
+    },
+    {
+      "sample_id": "invoice_style",
+      "v1_hit": "0/6",
+      "v3_hit": "0/0"
+    },
+    {
+      "sample_id": "template_sale_filled",
+      "v1_hit": "5/6",
+      "v3_hit": "5/6"
+    },
+    {
+      "sample_id": "template_data_service_filled",
+      "v1_hit": "5/5",
+      "v3_hit": "5/5"
+    },
+    {
+      "sample_id": "invoice_filled_synthetic",
+      "v1_hit": "—（v3 新增样本）",
+      "v3_hit": "6/6"
+    }
+  ],
+  "v2_to_v3_changes": [
+    {
+      "sample_id": "contract_B",
+      "field": "term_months",
+      "v2_status": "ok/",
+      "v3_status": "validation_review/term_out_of_bounds"
+    },
+    {
+      "sample_id": "contract_C",
+      "field": "term_months",
+      "v2_status": "fail/ocr 误识别（字形混淆）",
+      "v3_status": "validation_review/term_inconsistent"
+    },
+    {
+      "sample_id": "invoice_style",
+      "field": "invoice_no",
+      "v2_status": "fail/字段缺失",
+      "v3_status": "expected_absent/字段缺失"
+    },
+    {
+      "sample_id": "invoice_style",
+      "field": "invoice_date",
+      "v2_status": "fail/字段缺失",
+      "v3_status": "expected_absent/字段缺失"
+    },
+    {
+      "sample_id": "invoice_style",
+      "field": "seller",
+      "v2_status": "fail/字段缺失",
+      "v3_status": "expected_absent/字段缺失"
+    },
+    {
+      "sample_id": "invoice_style",
+      "field": "buyer",
+      "v2_status": "fail/字段缺失",
+      "v3_status": "expected_absent/字段缺失"
+    },
+    {
+      "sample_id": "invoice_style",
+      "field": "amount_incl_tax",
+      "v2_status": "fail/字段缺失",
+      "v3_status": "expected_absent/字段缺失"
+    },
+    {
+      "sample_id": "invoice_style",
+      "field": "tax_amount",
+      "v2_status": "fail/字段缺失",
+      "v3_status": "expected_absent/字段缺失"
+    }
+  ]
+}
