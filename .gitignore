@@ -4,5 +4,9 @@ __pycache__/
 *.pyc
 data/*
 !data/.gitkeep
+
+# 评测运行时滚动上下文（反前视机制产物，每次评测重建）
+_eval_context_seen.jsonl
 .pytest_cache/
 .streamlit/
+

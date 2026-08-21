@@ -193,7 +193,8 @@ def stage_alerts(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
 
 def stage_score(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
     state.risk_score = score_case(
-        state.case_id, state.verification, state.rule_hits, state.stress, state.alerts
+        state.case_id, state.verification, state.rule_hits, state.stress, state.alerts,
+        validation_flags=state.validation_flags,
     )
     rt.audit.log("scoring", {"case_id": state.case_id},
                  state.risk_score.model_dump(), case_id=state.case_id)
@@ -256,8 +257,11 @@ def run_pipeline(
                          tools=build_default_registry(audit),
                          out_dir=Path(out_dir) if out_dir else None,
                          guard_llm=guard_llm)
-    lp = Path(labels_path) if labels_path else base / "labels.jsonl"
-    rt.item_index, rt.serial_index, rt.all_cases = load_dataset_context(lp)
+    # Anti-look-ahead (EVAL-01): cross-case history is loaded ONLY when labels_path
+    # is explicitly provided. Evaluation passes a chronologically-built context of
+    # prior cases' SYSTEM OUTPUTS; production passes the real registry export.
+    if labels_path is not None:
+        rt.item_index, rt.serial_index, rt.all_cases = load_dataset_context(Path(labels_path))
 
     state = PipelineState(case_id=case_id, run_mode=run_mode, files=files)
     for name, stage in _STAGES:
@@ -339,3 +343,4 @@ def main(argv: list[str] | None = None) -> None:
 
 if __name__ == "__main__":
     main()
+

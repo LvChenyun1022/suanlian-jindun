@@ -32,7 +32,7 @@ _DAXIE_RE = re.compile(
     r"(?<![零壹贰叁肆伍陆柒捌玖拾佰仟万亿】])"  # 防止截取上一子句大写的尾部碎片（如"零捌拾元贰角"）
     r"(?:【?(?:人民币)?[零壹贰叁肆伍陆柒捌玖拾佰仟万亿]+】?[元圆][零壹贰叁肆伍陆柒捌玖角分]*(?:整|正)?"
     r"|【?[零壹贰叁肆伍陆柒捌玖]+[角分])")
-_ARABIC_RE = re.compile(r"[¥￥]?\s*【?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*】?\s*元?")
+_ARABIC_RE = re.compile(r"[¥￥]?\s*【?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*】?\s*(?:万元|亿元|万|亿|元)?")
 
 _TERM_LABEL_RE = re.compile(r"(?:租赁期限|合同期限|借款期限|期限)")
 _TERM_CAND_RES = [
@@ -294,3 +294,4 @@ def validate_document(
         _, term_flags = check_term(text)
         flags += term_flags
     return flags
+

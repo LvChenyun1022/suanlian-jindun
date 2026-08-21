@@ -95,15 +95,41 @@ def run_eval(
     ext_m = ext_t = 0
     conclusions = covered = 0
     rule_exact = 0
+    # Cross-case history comes only from previously completed cases' system
+    # outputs — no future cases, no label oracles — matching production, where
+    # the registry contains only historically registered cases.
+    eval_context_path = out / "_eval_context_seen.jsonl"
+    seen_context_rows: list[dict] = []
     for row in labels:
+        eval_context_path.write_text(
+            "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in seen_context_rows),
+            encoding="utf-8",
+        )
         cid = row["case_id"]
         t0 = time.perf_counter()
         state = run_pipeline(
             cid, row["files"], run_mode,
             base_dir=root, audit_path=audit_path, out_dir=out / "reports" / cid,
+            labels_path=eval_context_path,
             guard_llm=False,  # 批量评测关闭护栏 LLM 二次判定（规则库检测仍生效），控制时耗
         )
         elapsed = time.perf_counter() - t0
+
+        lease_fields: dict = {}
+        if state.lease_items is not None:
+            for k, item in enumerate(state.lease_items.items):
+                lease_fields[f"items.{k}.item_id"] = {"value": item.item_id}
+                lease_fields[f"items.{k}.serial_no"] = {"value": item.serial_no}
+        seen_context_rows.append({
+            "case_id": cid,
+            "oracle": {"lease_items": {"fields": lease_fields}},
+            "metadata": {
+                "buyer": state.contract.lessee.name if state.contract else "",
+                "seller": (state.contract.vendor.name if state.contract and state.contract.vendor else ""),
+                "sign_date": (state.contract.sign_date.isoformat() if state.contract else "1970-01-01"),
+                "total_amount": (float(state.contract.total_amount.amount) if state.contract else 0.0),
+            },
+        })
 
         m, t, _ = score_case(row["oracle"],
                              {"contract": state.contract, "invoice": state.invoice,
@@ -374,3 +400,4 @@ def main(argv: list[str] | None = None) -> dict:
 
 if __name__ == "__main__":
     main()
+

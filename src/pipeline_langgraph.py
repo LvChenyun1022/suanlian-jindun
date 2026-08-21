@@ -31,7 +31,9 @@ def run_pipeline_graph(case_id: str, files: dict, run_mode: str = "mock", **kwar
     audit = SqliteAuditStore(kwargs.get("audit_path") or (base / "audit.db"), run_mode)
     rt = PipelineRuntime(settings=load_settings(), run_mode=run_mode, base_dir=base,
                          audit=audit, tools=build_default_registry(audit))
-    rt.item_index, rt.serial_index, rt.all_cases = load_dataset_context(base / "labels.jsonl")
+    _lp = kwargs.get("labels_path")
+    if _lp:
+        rt.item_index, rt.serial_index, rt.all_cases = load_dataset_context(Path(_lp))
 
     graph = StateGraph(PipelineState)
     for name, stage in _STAGES:
@@ -42,3 +44,4 @@ def run_pipeline_graph(case_id: str, files: dict, run_mode: str = "mock", **kwar
     graph.add_edge(_STAGES[-1][0], END)
     app = graph.compile()
     return app.invoke(PipelineState(case_id=case_id, run_mode=run_mode, files=files))
+

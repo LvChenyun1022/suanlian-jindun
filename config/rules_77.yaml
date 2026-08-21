@@ -3,7 +3,7 @@
 version: "0.1"
 rules:
   - id: R77-001
-    clause_ref: "77号文 第九条 第(一)项"
+    clause_ref: "银发〔2025〕77号 第十一条（应收账款电子凭证付款期限原则上≤6个月）"
     severity: medium
     description: "账期超过183天，提示关注长期挂账与回款风险"
     condition:
@@ -11,7 +11,7 @@ rules:
       days: 183
 
   - id: R77-002
-    clause_ref: "77号文 第九条 第(二)项"
+    clause_ref: "银发〔2025〕77号 第十一条（应收账款电子凭证付款期限最长不超过1年）"
     severity: high
     description: "账期超过365天，构成违规长期融资性挂账"
     condition:
@@ -19,26 +19,27 @@ rules:
       days: 365
 
   - id: R77-003
-    clause_ref: "77号文 第十二条 第(二)项"
+    clause_ref: "银发〔2025〕77号 第十条（真实贸易背景审查）"
     severity: high
     description: "三单核验不一致，贸易背景真实性存疑"
     condition:
       type: verification_failed
 
   - id: R77-004
-    clause_ref: "77号文 第十五条 第(三)项"
+    clause_ref: "银发〔2025〕77号 第十二条（拆分转让管控，参照）＋内部扩展规则"
     severity: medium
-    description: "同一主体30天内多笔金额接近登记阈值，疑似拆分规避"
+    description: "同一主体30天内多笔金额接近内部演示阈值，疑似拆分规避（内部扩展规则，非监管法定阈值）"
     condition:
       type: split_amounts
-      threshold: 5000000      # 登记阈值（元）
-      proximity: 0.8          # 金额落在 [阈值*0.8, 阈值) 视为"接近阈值"
+      threshold: 5000000      # 内部演示阈值（元），非监管法定阈值
+      proximity: 0.8          # 金额落在 [阈值*0.8, 阈值) 视为"接近阈值"（内部演示口径）
       window_days: 30
       min_count: 2            # 窗口内同一主体案件数（含本案件）
 
   - id: R77-005
-    clause_ref: "77号文 第十八条 第(一)项"
+    clause_ref: "银发〔2025〕77号 第十三条（动产融资统一登记）＋内部冲突核验"
     severity: block
     description: "租赁物在动产融资登记中存在冲突登记（一单多押风险）"
     condition:
       type: registry_conflict
+

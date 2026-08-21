@@ -38,6 +38,7 @@ def score_case(
     stress: ResidualStressResult | None,
     alerts: list[UtilizationAlert],
     config: dict | None = None,
+    validation_flags: list | None = None,
 ) -> RiskScore:
     """汇总四项分项为 0–100 风险分（越高越危险）并给出路由。"""
     cfg = config or load_scoring_config()
@@ -101,6 +102,11 @@ def score_case(
             total = max(total, float(cfg["overrides"]["high_min_score"]))
     total = min(100.0, total)
 
+    review_flags = [f for f in (validation_flags or []) if getattr(f, "severity", None) == "review"]
+    if review_flags:
+        total = max(total, float(cfg["routes"]["pass_max"]))  # floor only — NEVER cap (a cap would demote genuine rejects)
+        reasons.append("字段级交叉校验要求人工复核: " + "/".join(f.reason_code for f in review_flags))
+
     pass_max = float(cfg["routes"]["pass_max"])
     review_max = float(cfg["routes"]["review_max"])
     if total < pass_max:
@@ -114,3 +120,4 @@ def score_case(
         reasons.insert(0, "风险分超过 90，建议拒绝")
 
     return RiskScore(case_id=case_id, total=total, components=components, grade=grade, reasons=reasons)
+

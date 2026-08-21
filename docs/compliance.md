@@ -19,7 +19,7 @@
 |---|---|---|---|
 | 关键操作与模型调用日志应完整保存、防篡改、可追溯 | SQLite **append-only** 审计库：UPDATE/DELETE 由触发器禁止；每条记录含 `prev_hash` 形成防篡改链；记录工具调用、LLM 调用（输入/输出摘要 + token 数）、护栏拦截、人工操作 | `src/audit/sqlite_store.py` | 篡改自检（改一条记录即全链校验失败）；`pytest tests/test_audit*` |
 | 日志可按案件维度调取 | 按案件导出 JSONL + "审计包" zip（输入文件清单、各环节输出 JSON、审计日志、报告文件） | `src/report/report.py`（`export_audit_pack`） | Demo"导出审计包"按钮；解压核对文件齐全 |
-| 算法留痕可解释 | 每条结论可追溯到单据字段级证据（字段名/页码/原文片段/坐标） | `src/parsing/`（FieldEvidence）、`src/report/` | 证据链覆盖率 100%（940/940 条结论，eval/results） |
+| 算法留痕可解释 | 每条结论可追溯到单据字段级证据（字段名/页码/原文片段/坐标） | `src/parsing/`（FieldEvidence）、`src/report/` | 证据链覆盖率 100%（928/928 条结论，eval/results，2026-08-22 修正口径重跑） |
 
 ## 3. 五类智能体风险 → 护栏与对抗测试
 
@@ -37,7 +37,8 @@
 ## 4. 77 号文 → 规则引擎编号对照
 
 > 规则以 `config/rules_77.yaml` 声明式定义、Python 执行器（`src/rules/engine.py`）解释执行；
-> 每条命中输出规则编号 + 条款引用 + 字段级证据。规则命中准确率 100%（eval/results）。
+> 每条命中输出规则编号 + 条款引用 + 字段级证据。规则命中准确率 95.00%（eval/results，
+> 2026-08-22 修正口径重跑）；未命中来自重复质押每对案件首次出现时尚无既往登记历史。
 
 | 规则编号 | 条款引用 | 规则内容 | 触发条件 | 严重级 |
 |---|---|---|---|---|
@@ -55,3 +56,4 @@
 | 要求 | 产品功能 | 实现位置 |
 |---|---|---|
 | AI 生成内容应有显式标识 | 所有 AI 输出经 `label_ai_output` 加显式标识；Demo 页脚固定显示"本系统输出为 AI 辅助意见，不构成授信或投资建议；演示数据均为合成数据。" | `src/guardrails/checks.py`、`app/streamlit_app.py` |
+

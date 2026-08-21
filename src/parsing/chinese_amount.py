@@ -138,7 +138,8 @@ def parse_chinese_amount(text: str) -> Decimal | None:
 
 
 _ARABIC_RE = re.compile(
-    r"(?:人民币|RMB|￥|¥)?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*(亿元|万元|亿|万)?")
+    r"(?:人民币|RMB|￥|¥)?\s*[【\[]?\s*([0-9][0-9,]*(?:\.[0-9]{1,2})?)\s*[】\]]?\s*(亿元|万元|亿|万)?"
+)
 
 
 def parse_arabic_amount(text: str) -> Decimal | None:
@@ -184,3 +185,4 @@ def crosscheck_amount(
     if d is None or a is None:
         return "unavailable", d, a
     return ("match" if abs(d - a) <= tolerance else "mismatch"), d, a
+

@@ -24,9 +24,15 @@
     contract_B 180 月触发 `term_out_of_bounds`（假阳·规则边界，已人工核对记录）。
     报告：`eval/results/external_validity{,_v2,_v3}.{md,json}`（v1 口径复跑逐字段冻结一致）。
 
-- **v0.7**（文档与提交材料阶段）：
+- **v0.7**（文档与提交材料阶段；评测口径修正补记 2026-08-22）：
   - 交付 README（合规红线/架构/真实评测表/已知局限）、`docs/compliance.md`（监管条款→功能对照）、
     `docs/demo_script.md`（3 分钟路演）、`docs/plan_draft.md`（四章项目书骨架，市场数字均标"待核实"）。
+  - EVAL-01：取消 `labels.jsonl` 隐式全量历史，评测按时间序仅用前案系统输出滚动构建上下文；
+    VAL-01：review 级字段校验进入评分路由；AMT-01：括号包裹金额正确解析；REG-01：修正
+    银发〔2025〕77号第十至十三条映射并声明 R77-004 为内部演示阈值。
+  - 修正口径实测：召回 83.33%、规则准确率 95.00%、mock 提升 +50.0pp、live-basis 提升
+    +46.7pp。v0.5/v0.6 记录的 +66.7pp/+63.3pp 属旧前视口径，均由本组数值取代；冻结的
+    live 基线本身（召回 36.67%、FPR 1.43%、F1 0.5238、92,791 tokens、0 invalid）不变。
 
 - **v0.6**（消融基线有效性复核）：
   - `eval/baseline.py` 升级 v2-fixed-2026-08-11（冻结）：严格 JSON 输出（`{"is_fraud","confidence","evidence"}`）、
@@ -496,3 +502,4 @@ suanlian-jindun/
 pip install -r requirements.txt
 python -c "import src"
 ```
+

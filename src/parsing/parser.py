@@ -103,8 +103,14 @@ def convert(raw: str, kind: str, key: str) -> object:
             return raw
         if kind == "date":
             return date.fromisoformat(raw.strip())
-        if kind in ("money", "float"):
-            return float(re.sub(r"[,元\s]", "", raw))
+        if kind == "money":
+            from .chinese_amount import parse_arabic_amount
+            value = parse_arabic_amount(raw)
+            if value is None:
+                raise ValueError(raw)
+            return float(value)
+        if kind == "float":
+            return float(re.sub(r"[,\s]", "", raw))
         if kind == "int":
             m = re.search(r"-?\d+", raw.replace(",", ""))
             if not m:
@@ -348,3 +354,4 @@ def parse_case(
     invoice, ev2 = parse_document(base / files["invoice"], DocType.INVOICE, s, audit, files["invoice"])
     lease, ev3 = parse_document(base / files["lease_items"], DocType.LEASE_ITEMS, s, audit, files["lease_items"])
     return contract, invoice, lease, ev1 + ev2 + ev3  # type: ignore[return-value]
+

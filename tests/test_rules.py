@@ -28,7 +28,7 @@ def test_rules_yaml_loads() -> None:
     ids = [r["id"] for r in rules]
     assert ids == ["R77-001", "R77-002", "R77-003", "R77-004", "R77-005"]
     for r in rules:
-        assert r["clause_ref"].startswith("77号文")
+        assert r["clause_ref"].startswith("银发〔2025〕77号")
         assert r["severity"] in ("block", "high", "medium", "low")
 
 
@@ -57,7 +57,7 @@ def test_r77_003_verification_failed() -> None:
     ctx = make_ctx(verification=make_verification(all_pass=False))
     hits = _hits(ctx)
     assert "R77-003" in hits
-    assert hits["R77-003"].clause_ref == "77号文 第十二条 第(二)项"
+    assert hits["R77-003"].clause_ref == "银发〔2025〕77号 第十条（真实贸易背景审查）"
 
     ctx_ok = make_ctx(verification=make_verification(all_pass=True))
     assert "R77-003" not in _hits(ctx_ok)
@@ -121,3 +121,4 @@ def test_normal_case_no_hits() -> None:
                                date(2025, 6, 1), 1_000_000.0)],
     )
     assert _hits(ctx) == {}
+

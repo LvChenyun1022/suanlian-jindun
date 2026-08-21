@@ -1,5 +1,9 @@
 # 消融基线有效性复核报告（live，基线 v2-fixed-2026-08-11）
 
+> ⚠️ **口径修正（2026-08-22）**：本文引用的 +66.7pp/+63.3pp 差值曾以存在前视泄漏的
+> 100% 主系统召回计算；修正后 mock/live-basis 差值分别为 +50.0pp/+46.7pp。冻结 live
+> 基线本身的 36.67% 召回、1.43% FPR、F1 0.5238、92,791 tokens、0 invalid 仍有效。
+
 ## 基线审计摘要
 
 - 评测案件：100（本轮新跑 42，缓存复用 58）
@@ -62,3 +66,4 @@
   全部成功，最终 invalid_count=0、retry_count=0、429_count=0。
 - 全过程未改动主系统代码、评分权重、标签与评测集；修复前结果保存于
   `eval_results_before_baseline_fix.{json,md}` 与 `eval/baseline_before_baseline_fix.py.txt`。
+

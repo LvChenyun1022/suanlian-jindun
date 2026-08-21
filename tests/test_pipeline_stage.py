@@ -140,14 +140,49 @@ def test_report_content_and_zip(pipeline_ds: Path) -> None:
 
 
 def test_pipeline_fraud_case_review_or_reject(pipeline_ds: Path) -> None:
-    """数据集中欺诈案（R77-003 high 兜底）应进入人审或拒绝，不得自动放行。"""
+    """按时间序仅用前案系统输出构建历史；首个重复质押案不可前视。"""
+    from src.pipeline import run_pipeline
+
     labels = [json.loads(l) for l in (pipeline_ds / "labels.jsonl").read_text(encoding="utf-8").splitlines()]
-    frauds = [r["case_id"] for r in labels if r["is_fraud"]]
+    frauds = [r for r in labels if r["is_fraud"]]
     assert frauds
-    for cid in frauds:
-        state = _run(cid, pipeline_ds)
-        assert state.risk_score.grade in ("review", "reject"), f"{cid} 评分 {state.risk_score.total}"
-        assert state.risk_score.total >= 60
+    seen_path = pipeline_ds / "_seen.jsonl"
+    seen_rows: list[dict] = []
+    b_count = flagged = 0
+    for row in frauds:
+        seen_path.write_text(
+            "".join(json.dumps(r, ensure_ascii=False) + "\n" for r in seen_rows),
+            encoding="utf-8",
+        )
+        cid = row["case_id"]
+        state = run_pipeline(
+            cid, row["files"], "mock", base_dir=pipeline_ds, labels_path=seen_path,
+        )
+        if row["fraud_pattern"] in ("a_chengxing", "c_circular_trade"):
+            assert state.risk_score.grade in ("review", "reject"), f"{cid} 评分 {state.risk_score.total}"
+            assert state.risk_score.total >= 60
+        if row["fraud_pattern"] == "b_multi_pledge":
+            b_count += 1
+            flagged += any(h.rule_id == "R77-005" for h in state.rule_hits)
+
+        lease_fields: dict = {}
+        if state.lease_items is not None:
+            for k, item in enumerate(state.lease_items.items):
+                lease_fields[f"items.{k}.item_id"] = {"value": item.item_id}
+                lease_fields[f"items.{k}.serial_no"] = {"value": item.serial_no}
+        seen_rows.append({
+            "case_id": cid,
+            "oracle": {"lease_items": {"fields": lease_fields}},
+            "metadata": {
+                "buyer": state.contract.lessee.name if state.contract else "",
+                "seller": (state.contract.vendor.name if state.contract and state.contract.vendor else ""),
+                "sign_date": (state.contract.sign_date.isoformat() if state.contract else "1970-01-01"),
+                "total_amount": (float(state.contract.total_amount.amount) if state.contract else 0.0),
+            },
+        })
+
+    assert b_count
+    assert flagged >= b_count // 2
 
 
 def test_pipeline_langgraph_optional() -> None:
@@ -169,3 +204,4 @@ def test_adversarial_suite_100_percent() -> None:
     assert result["total"] >= 20, "对抗用例数须 ≥20"
     assert result["rate"] == 1.0, f"拦截率 {result['rate']:.0%}: {result['failures']}"
     assert result["failures"] == []
+
