@@ -57,7 +57,9 @@ def test_r77_003_verification_failed() -> None:
     ctx = make_ctx(verification=make_verification(all_pass=False))
     hits = _hits(ctx)
     assert "R77-003" in hits
-    assert hits["R77-003"].clause_ref == "银发〔2025〕77号 第十条（真实贸易背景审查）"
+    assert hits["R77-003"].clause_ref == (
+        "银发〔2025〕77号 第十条（应收账款电子凭证真实贸易背景；场景化参考）"
+    )
 
     ctx_ok = make_ctx(verification=make_verification(all_pass=True))
     assert "R77-003" not in _hits(ctx_ok)

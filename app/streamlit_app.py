@@ -119,7 +119,7 @@ def _evidence_table(evidences) -> None:
 
 
 def panel_rules(state: PipelineState) -> None:
-    st.subheader("③ 77号文规则命中")
+    st.subheader("③ 贸易真实性与账期规则命中")
     if not state.rule_hits:
         st.success("无规则命中")
         return
