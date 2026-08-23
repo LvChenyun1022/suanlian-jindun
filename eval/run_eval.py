@@ -14,9 +14,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import time
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import urlsplit, urlunsplit
 
 from config.settings import load_settings
 
@@ -48,6 +51,17 @@ TARGETS = {
     "cost_per_case_max": 0.5,
     "ablation_lift_min": 15.0,  # 百分点
 }
+
+
+def _safe_endpoint(value: str) -> str:
+    """Return a reproducibility-safe endpoint without credentials/query data."""
+    parts = urlsplit(value)
+    host = parts.hostname or ""
+    try:
+        port = f":{parts.port}" if parts.port is not None else ""
+    except ValueError:
+        port = ""
+    return urlunsplit((parts.scheme, f"{host}{port}", parts.path, "", ""))
 
 
 def _prf(tp: int, fp: int, fn: int, tn: int) -> dict:
@@ -249,9 +263,19 @@ def run_eval(
     baseline_total_tokens = baseline_tokens["prompt"] + baseline_tokens["completion"]
 
     metrics = {
+        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "run_mode": run_mode,
         "baseline_version": BASELINE_VERSION,
         "cases": n,
+        "runtime": {
+            "python_version": platform.python_version(),
+            "platform": platform.platform(),
+        },
+        "llm_config": {
+            "base_url": None if mock else _safe_endpoint(settings.base_url),
+            "model": None if mock else settings.model,
+            "api_key_present": bool(settings.api_key) if not mock else False,
+        },
         "extraction_accuracy": round(ext_m / ext_t, 4) if ext_t else 0.0,
         "extraction_fields": f"{ext_m}/{ext_t}",
         "verification_f1": verification_cm["f1"],
@@ -306,6 +330,14 @@ def render_tables(m: dict) -> str:
     """生成指标表 + 消融对比表（Markdown）。"""
     L = []
     p = m["passed"]
+    if m.get("run_mode") == "live" and m.get("llm_config"):
+        cfg = m["llm_config"]
+        L.append(
+            f"> Live 配置：`{cfg.get('model')}` @ `{cfg.get('base_url')}`；"
+            f"基线 {m['baseline']['tokens']:,} tokens，"
+            f"invalid {m['baseline']['invalid_count']}。API Key 未写入结果文件。"
+        )
+        L.append("")
     L.append("| 指标 | 结果 | 目标 | 达标 |")
     L.append("|---|---|---|---|")
     rows = [

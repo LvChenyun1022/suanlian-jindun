@@ -10,3 +10,7 @@ _eval_context_seen.jsonl
 .pytest_cache/
 .streamlit/
 
+# live 评测本地明细（只提交汇总 JSON/Markdown 与 RUN_METADATA.md）
+eval/results_live_temporal_*/reports/
+eval/results_live_temporal_*/audit_eval.db
+
