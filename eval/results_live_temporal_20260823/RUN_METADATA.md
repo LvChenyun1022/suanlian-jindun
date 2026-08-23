@@ -20,7 +20,7 @@
 - 基线补充指标：Balanced Accuracy 0.6524，MCC 0.4298
 - 消融召回差值：+50.0pp（valid，目标 ≥15pp）
 - 基线调用：306,201 tokens，0 invalid，0 baseline errors
-- 分模式基线召回：a 承兴系 100%，b 一单多押 0%，c 空转贸易 0%
+- 分已知注入模式基线召回：a 虚构应收 100%，b 跨案重复资产 0%，c 关联方闭环 0%
 - 主系统时耗：均值 0.157s/案，最大 0.267s/案
 
 `eval_results.json` 是逐案与汇总机器可读记录，`eval_results.md` 是人类可读汇总。

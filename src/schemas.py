@@ -231,7 +231,7 @@ class AuditLogRecord(BaseModel):
 # ---------- 评测集标签 ----------
 
 class FraudPattern(str, Enum):
-    A_CHENGXING = "a_chengxing"        # 承兴系：伪造合同/单据、假冒对手方
+    A_CHENGXING = "a_chengxing"        # 兼容标识：虚构应收/主体不一致模式
     B_MULTI_PLEDGE = "b_multi_pledge"  # 一单多押：同一租赁物重复融资
     C_CIRCULAR = "c_circular_trade"    # 空转贸易：无真实交付的循环合同
 

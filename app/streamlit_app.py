@@ -26,11 +26,42 @@ from src.schemas import PipelineState  # noqa: E402
 CASES_ROOT = Path(os.environ.get("JINDUN_CASES_ROOT", ROOT / "data" / "cases"))
 UPLOAD_ROOT = ROOT / "data" / "uploads"
 DOC_LABELS = {"contract": "购销合同", "invoice": "增值税发票", "lease_items": "租赁物清单"}
+DEMO_CONTEXT_PATH = CASES_ROOT / "_demo_context_seen.jsonl"
 
 st.set_page_config(page_title="算链金盾 · 算力融资租赁风控 Demo", layout="wide")
 
 
 # ---------------- 侧边栏：案件选择与运行 ----------------
+
+def _context_row_from_state(state: PipelineState) -> dict | None:
+    """把已完成案件的系统抽取结果转换为后续案件可读取的历史登记摘要。"""
+    if state.contract is None or state.lease_items is None:
+        return None
+    lease_fields: dict[str, dict[str, str]] = {}
+    for index, item in enumerate(state.lease_items.items):
+        lease_fields[f"items.{index}.item_id"] = {"value": item.item_id}
+        lease_fields[f"items.{index}.serial_no"] = {"value": item.serial_no}
+    return {
+        "case_id": state.case_id,
+        "oracle": {"lease_items": {"fields": lease_fields}},
+        "metadata": {
+            "buyer": state.contract.lessee.name,
+            "seller": state.contract.vendor.name if state.contract.vendor else "",
+            "sign_date": state.contract.sign_date.isoformat(),
+            "total_amount": float(state.contract.total_amount.amount),
+        },
+    }
+
+
+def _write_demo_context(rows: list[dict], current_case_id: str) -> Path:
+    """写入不含当前案件自身的历史快照，避免重复运行造成自匹配。"""
+    prior_rows = [row for row in rows if row.get("case_id") != current_case_id]
+    DEMO_CONTEXT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DEMO_CONTEXT_PATH.write_text(
+        "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in prior_rows),
+        encoding="utf-8",
+    )
+    return DEMO_CONTEXT_PATH
 
 def sidebar() -> None:
     st.sidebar.title("案件选择")
@@ -38,6 +69,7 @@ def sidebar() -> None:
     mock = st.sidebar.toggle("使用 mock LLM（无 Key 也能演示）", value=True, key="mock_toggle")
 
     case_id = files = base_dir = None
+    use_demo_history = False
     if source == "合成库选择":
         cases = sorted(d.name for d in CASES_ROOT.iterdir()
                        if d.is_dir() and d.name.startswith("case_")) if CASES_ROOT.exists() else []
@@ -47,6 +79,18 @@ def sidebar() -> None:
         case_id = st.sidebar.selectbox("案件", cases, key="case_select")
         base_dir = CASES_ROOT
         files = {dt: f"{case_id}/{dt}.pdf" for dt in DOC_LABELS}
+        use_demo_history = st.sidebar.toggle(
+            "启用演示登记历史（仅合成库）",
+            value=True,
+            key="demo_history_toggle",
+            help="只使用本次浏览器会话中此前已运行案件的系统抽取输出，不读取未来案件或标签真值。",
+        )
+        history_rows = st.session_state.get("demo_context_rows", [])
+        st.sidebar.caption(f"当前演示历史：{len(history_rows)} 案（仅本会话）")
+        if st.sidebar.button("清空演示登记历史", key="clear_demo_history"):
+            st.session_state["demo_context_rows"] = []
+            DEMO_CONTEXT_PATH.unlink(missing_ok=True)
+            st.sidebar.success("演示登记历史已清空")
     else:
         uploads = {}
         for dt, label in DOC_LABELS.items():
@@ -65,11 +109,32 @@ def sidebar() -> None:
     ready = case_id is not None
     if st.sidebar.button("运行 Pipeline", key="run_btn", type="primary", disabled=not ready):
         run_mode = "mock" if mock else "live"
+        labels_path = None
+        if source == "合成库选择" and use_demo_history:
+            labels_path = _write_demo_context(
+                st.session_state.get("demo_context_rows", []), case_id
+            )
         with st.spinner(f"正在以 {run_mode} 模式运行全链路..."):
-            state = run_pipeline(case_id, files, run_mode, base_dir=base_dir)
+            state = run_pipeline(
+                case_id,
+                files,
+                run_mode,
+                base_dir=base_dir,
+                labels_path=labels_path,
+            )
         st.session_state["state"] = state
         st.session_state["base_dir"] = str(base_dir)
         st.session_state.pop("manual_decision", None)
+        if source == "合成库选择" and use_demo_history:
+            row = _context_row_from_state(state)
+            if row is not None:
+                rows = [
+                    existing
+                    for existing in st.session_state.get("demo_context_rows", [])
+                    if existing.get("case_id") != case_id
+                ]
+                rows.append(row)
+                st.session_state["demo_context_rows"] = rows
 
 
 # ---------------- 结果面板 ----------------
@@ -83,7 +148,7 @@ def panel_stages(state: PipelineState) -> None:
          "耗时(s)": state.stage_timings.get(s, "")}
         for s in all_stages
     ])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
     if state.errors:
         st.error("异常/降级记录：" + "；".join(state.errors))
 
@@ -98,7 +163,7 @@ def panel_verification(state: PipelineState) -> None:
         {"核验项": c.check_name, "结论": "✅ pass" if c.passed else "❌ fail", "说明": c.detail}
         for c in v.checks
     ])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
     for c in v.checks:
         if not c.passed:
             with st.expander(f"证据：{c.check_name}"):
@@ -115,7 +180,7 @@ def _evidence_table(evidences) -> None:
          "原文片段": e.excerpt}
         for e in evidences
     ])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
 
 
 def panel_rules(state: PipelineState) -> None:
@@ -128,7 +193,7 @@ def panel_rules(state: PipelineState) -> None:
          "说明": h.detail or h.description}
         for h in state.rule_hits
     ])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
     for h in state.rule_hits:
         with st.expander(f"证据：{h.rule_id}（{h.clause_ref}）"):
             _evidence_table(h.evidences)
@@ -146,7 +211,7 @@ def panel_stress(state: PipelineState) -> None:
          "DSCR": sc.dscr, "突破阈值": "是" if sc.breach else "否", "说明": sc.detail}
         for sc in s.scenarios
     ])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
     st.caption(f"GPU 型号：{s.gpu_model} ｜ 回本周期：{s.payback_months} 个月 ｜ 参数为公开案例校准假设值")
 
 
@@ -163,7 +228,7 @@ def panel_alerts(state: PipelineState) -> None:
          "窗口": a.window, "指标": a.metric_value, "说明": a.detail}
         for a in state.alerts
     ])
-    st.dataframe(df, use_container_width=True, hide_index=True)
+    st.dataframe(df, width="stretch", hide_index=True)
 
 
 def panel_score(state: PipelineState) -> None:
@@ -193,7 +258,7 @@ def panel_score(state: PipelineState) -> None:
             {"字段": f.field_name, "原因码": f.reason_code,
              "说明": f.detail, "原始值(掩码)": f.raw_masked}
             for f in review_flags
-        ]), use_container_width=True, hide_index=True)
+        ]), width="stretch", hide_index=True)
     info_flags = [f for f in state.validation_flags if f.severity == "info"]
     if info_flags:
         st.caption(f"交叉校验信息记录 {len(info_flags)} 条"
@@ -254,7 +319,7 @@ def panel_report(state: PipelineState) -> None:
         st.caption(f"哈希链校验：{'✅ OK' if chain_ok else '❌ FAIL'} ｜ 事件数：{len(events)}")
         if events:
             df = pd.DataFrame(events)[["seq", "ts", "stage", "event_type", "detail"]]
-            st.dataframe(df, use_container_width=True, hide_index=True)
+            st.dataframe(df, width="stretch", hide_index=True)
 
 
 # ---------------- 主流程 ----------------

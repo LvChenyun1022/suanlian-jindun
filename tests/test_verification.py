@@ -60,7 +60,7 @@ def test_normal_case_all_pass(verified20: dict) -> None:
 
 def test_fraud_a_buyer_mismatch_detected(verified20: dict) -> None:
     frauds = [cid for cid, r in verified20["labels"].items() if r["fraud_pattern"] == "a_chengxing"]
-    assert frauds, "小数据集应含承兴系样本"
+    assert frauds, "小数据集应含虚构应收/主体不一致样本"
     for cid in frauds:
         c, i, l = verified20["parsed"][cid]
         vr = verify_case(cid, c, i, l, verified20["evidences"][cid])

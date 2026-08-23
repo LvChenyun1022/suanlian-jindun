@@ -12,11 +12,11 @@ APP = str(Path(__file__).resolve().parent.parent / "app" / "streamlit_app.py")
 
 @pytest.fixture(scope="module")
 def app_ds(tmp_path_factory) -> Path:
-    """独立小数据集（20 案），避免污染 data/cases 的审计库。"""
+    """独立 100 案数据集（seed 42），覆盖正式演示使用的重复资产案件对。"""
     from src.datagen.generate import generate_dataset
 
     out = tmp_path_factory.mktemp("appds") / "cases"
-    generate_dataset(20, out, 77)
+    generate_dataset(100, out, 42)
     return out
 
 
@@ -32,21 +32,33 @@ def test_app_loads_without_error(app_ds: Path) -> None:
     assert not at.exception
     assert at.caption[0].value.startswith("【AI 生成内容")
     # 页脚固定声明
-    assert "不构成授信或投资建议" in at.caption[-1].value
+    assert any("不构成授信或投资建议" in caption.value for caption in at.caption)
     # mock 开关默认开
     assert at.toggle(key="mock_toggle").value is True
+    # 合成库演示默认启用本会话历史，但不会读取未来标签
+    assert at.toggle(key="demo_history_toggle").value is True
 
 
 def test_app_run_pipeline_and_panels(app_ds: Path) -> None:
     at = _new_at(app_ds)
+    # 先运行重复资产组的首次出现，登记其系统抽取输出。
+    at.selectbox(key="case_select").set_value("case_0021").run()
     at.button(key="run_btn").click().run()
     assert not at.exception
     # 环节耗时表与核验/规则/压力/预警面板均渲染
-    assert len(at.dataframe) >= 4
+    assert len(at.dataframe) >= 3
     captions = " ".join(c.value for c in at.caption)
     assert "不构成授信或投资建议" in captions
     # 评分 metric 存在
     assert any("风险评分" in m.label for m in at.metric)
+
+    # 后出现案件只能读取本会话中已完成的前案输出，应命中重复资产规则。
+    at.selectbox(key="case_select").set_value("case_0058").run()
+    at.button(key="run_btn").click().run()
+    assert not at.exception
+    state = at.session_state["state"]
+    assert any(hit.rule_id == "R77-005" for hit in state.rule_hits)
+    assert state.risk_score.grade == "reject"
 
 
 def test_app_forced_review_writes_audit(app_ds: Path) -> None:

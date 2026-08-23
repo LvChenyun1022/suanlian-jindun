@@ -1,7 +1,7 @@
-"""案例构建：三类单据字段（f-string 模板）+ 三种造假模式注入。
+"""案例构建：三类单据字段（f-string 模板）+ 三种已知风险模式注入。
 
-造假模式（与 SPEC EvalLabel.fraud_pattern 枚举一致）：
-- a_chengxing    承兴系：虚构对大型核心企业应收账款，发票与合同主体不一致
+兼容模式标识（与 SPEC EvalLabel.fraud_pattern 枚举一致）：
+- a_chengxing    虚构应收/主体不一致（历史兼容标识）
 - b_multi_pledge 一单多押：同一租赁物编号/序列号出现在多案件清单中
 - c_circular_trade 空转贸易：买卖双方受同一实控人（名称含关联特征）、金额闭环
 
@@ -31,7 +31,7 @@ GPU_POOL: list[tuple[str, float]] = [
     ("NVIDIA RTX 4090 24GB", 16_500.0),
 ]
 
-# 虚构"大型核心企业"（承兴系造假用），名称明显虚构、不指向真实企业
+# 虚构"大型核心企业"（主体不一致模式用），名称明显虚构、不指向真实企业
 CORE_ENTERPRISE_POOL = [
     "中恒联合控股集团有限公司",
     "国瑞宏远能源集团有限公司",
@@ -179,7 +179,7 @@ class CaseFactory:
         invoice_no = _digits(rng, 8)
         list_no = f"QD-{index:04d}"
 
-        # ---- 发票主体（承兴系造假注入）----
+    # ---- 发票主体（虚构应收/主体不一致模式注入）----
         inv_seller, inv_buyer = seller, buyer
         if fraud_pattern == FRAUD_A:
             core = rng.choice(CORE_ENTERPRISE_POOL)

@@ -29,7 +29,7 @@
 | **记忆污染** | 无跨案件长期记忆：每次运行独立 `PipelineState`，无在线学习、无样本回流；评测集只读；合成单据每页带"程序合成虚构数据"标识防止误当真实样本 | `src/pipeline.py`、`src/schemas.py` | 设计性消解（无记忆面），由状态隔离测试覆盖 |
 | **身份越权** | 不代理任何真实主体身份；工具调用须显式注册，未注册身份/工具一律拒绝并留痕 | `src/guardrails/tools.py`（`ToolRegistry`） | `tool_abuse` 用例中的越权身份调用全部拦截 |
 | **工具滥用** | 工具白名单注册表：白名单外调用拒绝 + 审计留痕；评测中注册表初始为空白名单（仅 1 个合法对照工具） | `src/guardrails/tools.py` | `tool_abuse` ×5，全部 expect=block |
-| **运行失控** | ①结构化异常 + mock 模式全链回退（无 Key/超时/解析失败不崩溃）；②单案时耗上限（目标 ≤3 分钟，实测均值 0.214s）；③评分红线兜底（block 命中直接 ≥91 建议拒绝）；④60–90 分强制人审 | `src/pipeline.py`、`config/scoring.yaml` | 端到端时耗指标 + 评分路由测试 |
+| **运行失控** | ①结构化异常 + mock 模式全链回退（无 Key/超时/解析失败不崩溃）；②核心 pipeline 时耗上限（正式 live 均值 0.157s、最大 0.267s，不等于生产周转时间）；③评分红线兜底（block 命中将分数下限抬升至 91，仅给出建议拒绝提示）；④60–90 分强制人审，所有区间均由人最终决定 | `src/pipeline.py`、`config/scoring.yaml` | 核心 pipeline 时耗指标 + 评分路由测试 |
 
 **对抗测试结果：拦截率 100%（22/22 应拦截用例全部拦截，2 个正常对照用例无误伤）**——
 见 [eval/results/eval_results.md](../eval/results/eval_results.md) 与 `eval/adversarial/run.py`。

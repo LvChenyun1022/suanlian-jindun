@@ -9,7 +9,7 @@
   中断/限流后续跑只补失败案件；
 - 全量逐案审计写入 eval/results/baseline_audit.jsonl（完整 prompt / raw response /
   解析后标签 / HTTP 状态 / finish_reason / token 用量 / 重试次数）；
-- sanity gate：基线输出单一类别或 invalid_count > 0 → "欺诈检出率提升"记 invalid；
+- sanity gate：基线输出单一类别或 invalid_count > 0 → "已知模式召回差值"记 invalid；
   基线召回 = 100% → 记 saturated/not informative（主系统召回不可能超过 100%，
   +15pp 数学上不可达），并补充 F1 / 精确率 / FPR / balanced accuracy / MCC；
 - 结果落盘 eval/results_live/eval_results_after_baseline_fix.{json,md}，
@@ -395,7 +395,7 @@ def render_report(r: dict) -> str:
         L.append("")
         L.append(f"> {s['note']}")
         L.append("")
-    L.append("## 分造假模式基线召回（修复后，仅有效判定计入）\n")
+    L.append("## 分已知注入模式基线召回（修复后，仅有效判定计入）\n")
     L.append("| 模式 | 有效样本数 | 基线召回 |")
     L.append("|---|---|---|")
     for pattern, pr in r["baseline_pattern_recall"].items():

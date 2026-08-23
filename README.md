@@ -24,7 +24,8 @@
 ## 快速开始（逐条可复制）
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-lock.txt   # 推荐：复现当前已验证环境
+# 如需允许兼容的新版本，可改用：pip install -r requirements.txt
 cp .env.example .env          # 填入真实 LLM_API_KEY/BASE_URL/MODEL；保持占位符时用 --mock 运行
 python -c "import src"        # 初始化自检：无输出即通过
 python -m src.datagen.generate --n 100 --out data/cases --seed 42   # 生成合成评测集（可复现）
@@ -33,14 +34,30 @@ streamlit run app/streamlit_app.py                                  # 本地 Dem
 python -X utf8 -m eval.run_eval --cases data/cases --mock           # 全量评测（mock，无需 Key）
 python -X utf8 -m eval.run_eval --cases data/cases                  # 全量评测（live，需 Key）
 python -X utf8 -m eval.run_eval --cases data/cases --rerun-baseline-only  # 只重跑消融基线（缓存续跑）
-python -m pytest -q tests/                                          # 115 passed, 1 skipped
+python -X utf8 -m pytest -q tests --basetemp .pytest-local          # 正式环境 115 passed, 1 skipped；无可选 langgraph 时 116 passed
+python -X utf8 scripts/preflight.py --all                           # 提交前：结果、Demo 序列、测试一次核验
 ```
 
 Windows 控制台建议评测命令保留 `-X utf8`，避免结果表中的 Unicode 状态符在 GBK 环境下
 触发编码错误。
 
+如果 PowerShell 提示符前显示 `(base)`，直接输入 `python` 通常会调用 Anaconda，而不是项目环境。
+建议在 Windows 上明确使用项目解释器：
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements-lock.txt
+.\.venv\Scripts\python.exe -X utf8 scripts\preflight.py --all
+```
+
 可选依赖（`requirements-optional.txt`，不安装不影响运行）：`langgraph`（等价编排，
 `src/pipeline_langgraph.py` 惰性导入）、`paddleocr`（扫描件 OCR 预留）。
+
+### Demo 历史登记演示
+
+Streamlit 合成库默认启用“演示登记历史”：仅保存本次浏览器会话中已完成案件的**系统抽取输出**，
+不读取未来案件或标签真值。重复资产演示须依次运行 `case_0021`（首次出现，建立历史）和
+`case_0058`（后出现，预期命中 R77-005、评分 ≥91、建议拒绝）。重复运行同一案件时会自动排除
+其自身旧记录，避免自匹配。正式话术与应急步骤见 [docs/demo_script.md](docs/demo_script.md)。
 
 ## 评测结果（时序口径修正 2026-08-22；正式 live 全量重跑 2026-08-23；100 案，seed 42）
 
@@ -57,11 +74,11 @@ Windows 控制台建议评测命令保留 `-X utf8`，避免结果表中的 Unic
 |---|---|---|---|
 | 要素抽取准确率 | 100.00%（3260/3260 字段） | ≥95% | ✅ |
 | 三单核验 F1 | 0.9091 | ≥0.90 | ✅ |
-| 欺诈检出召回 / 误报率 | 83.33% / 0.00% | ≥90% / ≤10% | ❌ / ✅ |
+| 合成集已知模式召回 / 正常样本误报率 | 83.33% / 0.00% | ≥90% / ≤10% | ❌ / ✅ |
 | 规则命中准确率 | 95.00% | 100% | ❌ |
 | 证据链覆盖率 | 100.00%（928/928 条结论） | ≥98% | ✅ |
 | 对抗拦截率 | 100.00%（22/22） | 100% | ✅ |
-| 单案端到端时耗 | 均值 0.205s / 最大 0.38s（mock） | ≤3 分钟 | ✅ |
+| 核心 pipeline 时耗 | 均值 0.205s / 最大 0.38s（mock；非生产周转时间） | ≤3 分钟 | ✅ |
 | LLM token 成本 | 0 元/案（mock） | ≤0.5 元/案 | ✅ |
 | 消融：检出率提升 | **+50.0pp**（系统 83.33% vs mock 关键词基线 33.33%） | ≥15pp | ✅ |
 
@@ -78,9 +95,9 @@ Windows 控制台建议评测命令保留 `-X utf8`，避免结果表中的 Unic
 |---|---|---|---|---|---|---|
 | 本系统 | 83.33% | 0.00% | 100.00% | 0.9091 | 0.9167 | 0.8819 |
 | 纯 LLM 直判基线 | 33.33% | 2.86% | 83.33% | 0.4762 | 0.6524 | 0.4298 |
-| **检出率（召回）提升** | **+50.0pp** | | | | 目标 ≥15pp | ✅ |
+| **已知模式召回差值** | **+50.0pp** | | | | 目标 ≥15pp | ✅ |
 
-分造假模式基线召回：a 承兴系 100%、b 一单多押 0%、c 空转贸易 0%——纯 LLM 只能看出单案内
+分已知注入模式基线召回：a 虚构应收 100%、b 跨案重复资产 0%、c 关联方闭环 0%——纯 LLM 只能看出单案内
 主体不一致，无法发现跨案件租赁物重复质押与实控人关联空转，这正是结构化 pipeline 的增量价值。
 双方信息集并不完全相同：主系统拥有结构化工具与跨案历史，基线仅做无工具单案直判；因此该结果
 证明的是“工具链相对无工具直判的增量”，不单独证明 Agent 推理能力更强。
@@ -129,7 +146,7 @@ src/       datagen · parsing · verification · rules · asset · monitoring
 app/       Streamlit Demo（localhost）
 eval/      run_eval（全指标）· baseline（消融基线）· rerun_baseline · adversarial · results*
 docs/      compliance（监管对照）· demo_script（路演脚本）· plan_draft（项目书骨架）· screenshots
-tests/     pytest（50 项）
+tests/     pytest（116 项；正式环境 115 passed、1 skipped；无可选 langgraph 时 116 passed）
 data/      合成评测集与运行产物（不入库）
 ```
 
@@ -137,7 +154,7 @@ data/      合成评测集与运行产物（不入库）
 
 - **合成数据外部效度**：评测集为模板生成的数字文本 PDF，版式与噪声分布不同于真实扫描件；
   指标反映的是受控环境下的能力上限，不能直接外推到生产数据；
-- 三类造假模式为已知模式的程序化注入，对未知欺诈手法的泛化未验证；
+- 三类样本是已知风险结构的程序化注入，指标不构成现实主体或法律意义上的欺诈认定，未知手法泛化未验证；
 - 残值/折旧/租金参数为公开案例校准的假设值（`config/asset.yaml` 有注释），非市场报价；
 - 利用率时序、外部负面信号、动产登记查询均为本地 mock（代码中标注"模拟接口"）；
 - 主体规范化比对的缩写匹配规则在 mock 模式存在理论误报面，live 口径未暴露；

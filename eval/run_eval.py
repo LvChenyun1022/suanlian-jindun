@@ -228,7 +228,7 @@ def run_eval(
     else:
         ablation_lift_status = "valid"
 
-    # 各造假模式召回（原因分析用）
+    # 各已知注入模式召回（原因分析用）
     pattern_recall: dict[str, dict] = {}
     for pattern in ("a_chengxing", "b_multi_pledge", "c_circular_trade"):
         cases = [(c, i) for c, i in per_case.items() if i["fraud_pattern"] == pattern]
@@ -343,8 +343,8 @@ def render_tables(m: dict) -> str:
     rows = [
         ("要素抽取准确率", f"{m['extraction_accuracy']:.2%}（{m['extraction_fields']}）", "≥95%", p["extraction_accuracy"]),
         ("三单核验 F1", f"{m['verification_f1']:.4f}", "≥0.90", p["verification_f1"]),
-        ("欺诈检出召回", f"{m['fraud_recall']:.2%}", "≥90%", p["fraud_recall"]),
-        ("欺诈误报率", f"{m['fraud_fpr']:.2%}", "≤10%", p["fraud_fpr"]),
+        ("合成集已知模式召回", f"{m['fraud_recall']:.2%}", "≥90%", p["fraud_recall"]),
+        ("正常样本误报率", f"{m['fraud_fpr']:.2%}", "≤10%", p["fraud_fpr"]),
         ("规则命中准确率", f"{m['rule_accuracy']:.2%}", "100%", p["rule_accuracy"]),
         ("证据链覆盖率", f"{m['evidence_coverage']:.2%}（{m['evidence_fields']}）", "≥98%", p["evidence_coverage"]),
         ("对抗拦截率", f"{m['adversarial_rate']:.2%}", "100%", p["adversarial_rate"]),
@@ -357,7 +357,7 @@ def render_tables(m: dict) -> str:
     L.append("### 消融对比：本系统 vs 纯 LLM 直判（基线 {}，{}）".format(
         m["baseline_version"], "mock 关键词" if m["baseline"]["type"] == "mock_keywords" else "真实 LLM"))
     L.append("")
-    L.append("| 方案 | 欺诈召回 | 误报率 | 精确率 | F1 |")
+    L.append("| 方案 | 已知模式召回 | 正常样本误报率 | 精确率 | F1 |")
     L.append("|---|---|---|---|---|")
     L.append(f"| 本系统 | {m['fraud_recall']:.2%} | {m['fraud_fpr']:.2%} | {m['fraud_cm']['precision']:.2%} | {m['fraud_cm']['f1']:.4f} |")
     L.append(f"| 纯 LLM 直判 | {m['baseline']['recall']:.2%} | {m['baseline']['fpr']:.2%} | {m['baseline']['cm']['precision']:.2%} | {m['baseline']['cm']['f1']:.4f} |")
@@ -371,7 +371,7 @@ def render_tables(m: dict) -> str:
     if m["baseline_errors"]:
         L.append(f"> 基线 invalid/失败 {len(m['baseline_errors'])} 次（已从指标分母剔除，未默认映射为 fraud/normal，见 JSON baseline_errors）。")
         L.append("")
-    L.append("### 分造假模式召回")
+    L.append("### 分已知注入模式召回")
     L.append("")
     L.append("| 模式 | 样本数 | 本系统召回 | 基线召回 |")
     L.append("|---|---|---|---|")

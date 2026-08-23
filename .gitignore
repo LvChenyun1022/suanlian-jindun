@@ -1,5 +1,6 @@
 .env
 .env.txt
+.venv/
 __pycache__/
 *.pyc
 data/*
@@ -8,6 +9,7 @@ data/*
 # 评测运行时滚动上下文（反前视机制产物，每次评测重建）
 _eval_context_seen.jsonl
 .pytest_cache/
+.pytest-local/
 .streamlit/
 
 # live 评测本地明细（只提交汇总 JSON/Markdown 与 RUN_METADATA.md）

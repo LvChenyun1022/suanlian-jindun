@@ -102,7 +102,7 @@ def test_no_real_style_sensitive_numbers(small_ds: Path) -> None:
     assert "*" in all_text  # 掩码确实存在
 
 
-# ---------- 3. 欺诈标签分布与造假模式有效性 ----------
+# ---------- 3. 合成风险标签分布与已知模式有效性 ----------
 
 def test_fraud_distribution(full_ds: Path) -> None:
     labels = read_labels(full_ds)
@@ -118,7 +118,7 @@ def test_fraud_distribution(full_ds: Path) -> None:
 
 
 def test_fraud_a_party_mismatch(full_ds: Path) -> None:
-    """承兴系：发票购买方 ≠ 合同买方，且为虚构核心企业。"""
+    """虚构应收/主体不一致：发票购买方 ≠ 合同买方，且为虚构核心企业。"""
     for row in read_labels(full_ds):
         if row["fraud_pattern"] != "a_chengxing":
             continue
