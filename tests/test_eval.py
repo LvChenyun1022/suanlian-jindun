@@ -32,6 +32,13 @@ def test_all_targets_pass_mock(eval_result) -> None:
 
 def test_metric_values_sane(eval_result) -> None:
     m, _out = eval_result
+    assert m["generated_at_utc"].endswith("+00:00")
+    assert m["runtime"]["python_version"]
+    assert m["llm_config"] == {
+        "base_url": None,
+        "model": None,
+        "api_key_present": False,
+    }
     assert m["extraction_accuracy"] >= TARGETS["extraction_accuracy"]
     assert m["verification_f1"] >= TARGETS["verification_f1"]
     assert m["fraud_recall"] >= 0.80  # structural floor; measured 0.8333 on seed-66 fixture

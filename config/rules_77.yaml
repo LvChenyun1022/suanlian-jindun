@@ -1,9 +1,9 @@
-# 77号文规则集（本演示虚构编号的规则包，SPEC M4）
+# 贸易真实性与账期规则库（R77 为项目内部编号，含银发〔2025〕77号场景化规则，SPEC M4）
 # Python 执行器（src/rules/engine.py）按 condition.type 解释执行。
 version: "0.1"
 rules:
   - id: R77-001
-    clause_ref: "银发〔2025〕77号 第十一条（应收账款电子凭证付款期限原则上≤6个月）"
+    clause_ref: "银发〔2025〕77号 第十一条（应收账款电子凭证；非电子凭证场景仅作内控参考）"
     severity: medium
     description: "账期超过183天，提示关注长期挂账与回款风险"
     condition:
@@ -11,22 +11,22 @@ rules:
       days: 183
 
   - id: R77-002
-    clause_ref: "银发〔2025〕77号 第十一条（应收账款电子凭证付款期限最长不超过1年）"
+    clause_ref: "银发〔2025〕77号 第十一条（应收账款电子凭证；非电子凭证场景仅作内控参考）"
     severity: high
-    description: "账期超过365天，构成违规长期融资性挂账"
+    description: "账期超过365天：电子凭证场景超出最长期限；其他场景列为内部高风险提示"
     condition:
       type: account_days_gt
       days: 365
 
   - id: R77-003
-    clause_ref: "银发〔2025〕77号 第十条（真实贸易背景审查）"
+    clause_ref: "银发〔2025〕77号 第十条（应收账款电子凭证真实贸易背景；场景化参考）"
     severity: high
     description: "三单核验不一致，贸易背景真实性存疑"
     condition:
       type: verification_failed
 
   - id: R77-004
-    clause_ref: "银发〔2025〕77号 第十二条（拆分转让管控，参照）＋内部扩展规则"
+    clause_ref: "银发〔2025〕77号 第十二条（电子凭证拆分转让，参照）＋内部扩展规则"
     severity: medium
     description: "同一主体30天内多笔金额接近内部演示阈值，疑似拆分规避（内部扩展规则，非监管法定阈值）"
     condition:
@@ -37,7 +37,7 @@ rules:
       min_count: 2            # 窗口内同一主体案件数（含本案件）
 
   - id: R77-005
-    clause_ref: "银发〔2025〕77号 第十三条（动产融资统一登记）＋内部冲突核验"
+    clause_ref: "银发〔2025〕77号 第十三条（电子凭证融资登记，参照）＋内部冲突核验"
     severity: block
     description: "租赁物在动产融资登记中存在冲突登记（一单多押风险）"
     condition:

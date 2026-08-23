@@ -1,7 +1,7 @@
 # 算链金盾（suanlian-jindun）
 
 算力（GPU）融资租赁智能风控**合成数据演示系统**：对"购销合同 + 增值税发票 + 租赁物清单"三单做
-字段级证据抽取、三单一致性核验、77 号文规则引擎、GPU 残值与现金流压力测试、利用率预警与
+字段级证据抽取、三单一致性核验、贸易真实性与账期规则、GPU 残值与现金流压力测试、利用率预警与
 0–100 风险评分，输出可追溯到单据坐标的证据链报告与防篡改审计包。
 
 ## ⚠️ 合规红线声明（系统边界，不可逾越）
@@ -10,9 +10,16 @@
 - 不接任何真实交易系统，不做授信/投资决定；
 - 全部演示数据为程序合成的虚构数据，不使用真实个人敏感数据（单据内证件号/银行账号均为掩码形式）；
 - 仅本地 localhost 运行，不公网部署；
-- 所有外部接口（LLM、外部负面信号、动产登记查询）均为模拟/可替换接口。
+- 生产业务侧的外部负面信号与动产登记查询仍为 mock/可替换接口；本次 live 评测只在
+  “纯 LLM 单案直判”消融基线上调用第三方兼容网关，不代表已接入生产外部数据。
 
 系统边界详见 [SPEC.md](SPEC.md) 第 1 节；监管条款到产品功能的对照见 [docs/compliance.md](docs/compliance.md)。
+
+## 参赛主体与责任边界
+
+本项目按赛事补充规则，以**一人公司（OPC）**形式单独参赛。项目负责人独立承担需求定义、
+合规边界、算法与工程实现、测试复核、材料提交及路演答辩；开源组件、LLM API 和 AI 编程助手
+仅作为开发工具，不作为团队成员或成果责任主体。所有最终决策、指标披露与交付责任均由负责人承担。
 
 ## 快速开始（逐条可复制）
 
@@ -23,16 +30,19 @@ python -c "import src"        # 初始化自检：无输出即通过
 python -m src.datagen.generate --n 100 --out data/cases --seed 42   # 生成合成评测集（可复现）
 python -m src.pipeline --case data/cases/case_0001 --mock           # 单案端到端（mock）
 streamlit run app/streamlit_app.py                                  # 本地 Demo（仅 localhost）
-python -m eval.run_eval --cases data/cases --mock                   # 全量评测（mock，无需 Key）
-python -m eval.run_eval --cases data/cases                          # 全量评测（live，需 Key）
-python -m eval.run_eval --cases data/cases --rerun-baseline-only    # 只重跑消融基线（缓存续跑）
-python -m pytest -q tests/                                          # 50 passed
+python -X utf8 -m eval.run_eval --cases data/cases --mock           # 全量评测（mock，无需 Key）
+python -X utf8 -m eval.run_eval --cases data/cases                  # 全量评测（live，需 Key）
+python -X utf8 -m eval.run_eval --cases data/cases --rerun-baseline-only  # 只重跑消融基线（缓存续跑）
+python -m pytest -q tests/                                          # 115 passed, 1 skipped
 ```
+
+Windows 控制台建议评测命令保留 `-X utf8`，避免结果表中的 Unicode 状态符在 GBK 环境下
+触发编码错误。
 
 可选依赖（`requirements-optional.txt`，不安装不影响运行）：`langgraph`（等价编排，
 `src/pipeline_langgraph.py` 惰性导入）、`paddleocr`（扫描件 OCR 预留）。
 
-## 评测结果（修正口径重跑，2026-08-22；100 案 = 70 正常 + 30 欺诈[a/b/c 各 10]，seed 42）
+## 评测结果（时序口径修正 2026-08-22；正式 live 全量重跑 2026-08-23；100 案，seed 42）
 
 > **评测口径修正声明（2026-08-22）**：旧评测默认把全量 `labels.jsonl` 的租赁物真值加载为
 > 跨案件登记历史，使前案能够“看到”未来案件，构成 EVAL-01 前视泄漏。现改为按标签顺序滚动构建
@@ -51,31 +61,37 @@ python -m pytest -q tests/                                          # 50 passed
 | 规则命中准确率 | 95.00% | 100% | ❌ |
 | 证据链覆盖率 | 100.00%（928/928 条结论） | ≥98% | ✅ |
 | 对抗拦截率 | 100.00%（22/22） | 100% | ✅ |
-| 单案端到端时耗 | 均值 0.205s / 最大 0.38s | ≤3 分钟 | ✅ |
+| 单案端到端时耗 | 均值 0.205s / 最大 0.38s（mock） | ≤3 分钟 | ✅ |
 | LLM token 成本 | 0 元/案（mock） | ≤0.5 元/案 | ✅ |
 | 消融：检出率提升 | **+50.0pp**（系统 83.33% vs mock 关键词基线 33.33%） | ≥15pp | ✅ |
 
-### live 模式（真实 LLM 消融基线，[eval/results_live/eval_results_after_baseline_fix.md](eval/results_live/eval_results_after_baseline_fix.md)）
+### live 模式（100 案正式重跑，2026-08-23，[eval/results_live_temporal_20260823/eval_results.md](eval/results_live_temporal_20260823/eval_results.md)）
 
 主系统采用上述修正后口径（正则优先设计，pipeline 全程 0 LLM 调用、0 token、成本 0 元/案）。
-真实 LLM 直判基线（`eval/baseline.py` v2-fixed-2026-08-11，temperature=0，严格 JSON 输出，
-100 次调用、92,791 tokens、0 invalid）：
+真实 LLM 直判基线采用第三方 OpenAI-compatible 网关 `https://yuanyuaicloud.cn/v1`、
+`deepseek-v4-pro`，沿用 `eval/baseline.py` v2-fixed-2026-08-11（temperature=0，严格 JSON 输出）。
+100 案均返回有效结构化结果：**306,201 tokens、0 invalid、0 baseline errors**；主系统仍为
+0 LLM 调用、0 token。此次命令未传 `--price-per-1k-tokens`，故只报告 token，不把 0 元误写成
+基线真实费用。live 主系统端到端时耗为均值 0.157s、最大 0.267s。
 
 | 方案 | 召回 | 误报率 | 精确率 | F1 | Balanced Acc | MCC |
 |---|---|---|---|---|---|---|
 | 本系统 | 83.33% | 0.00% | 100.00% | 0.9091 | 0.9167 | 0.8819 |
-| 纯 LLM 直判基线 | 36.67% | 1.43% | 91.67% | 0.5238 | 0.6762 | 0.4969 |
-| **检出率（召回）提升** | **+46.7pp** | | | | 目标 ≥15pp | ✅ |
+| 纯 LLM 直判基线 | 33.33% | 2.86% | 83.33% | 0.4762 | 0.6524 | 0.4298 |
+| **检出率（召回）提升** | **+50.0pp** | | | | 目标 ≥15pp | ✅ |
 
-分造假模式基线召回：a 承兴系 100%、b 一单多押 10%、c 空转贸易 0%——纯 LLM 只能看出单案内
+分造假模式基线召回：a 承兴系 100%、b 一单多押 0%、c 空转贸易 0%——纯 LLM 只能看出单案内
 主体不一致，无法发现跨案件租赁物重复质押与实控人关联空转，这正是结构化 pipeline 的增量价值。
+双方信息集并不完全相同：主系统拥有结构化工具与跨案历史，基线仅做无工具单案直判；因此该结果
+证明的是“工具链相对无工具直判的增量”，不单独证明 Agent 推理能力更强。
 
-**基线有效性复核（如实记录）**：首轮 live 基线（v1）曾退化为"逢案必报"（召回 100%/误报 100%，
+**历史结果与基线有效性复核（如实记录）**：首轮 live 基线（v1）曾退化为"逢案必报"（召回 100%/误报 100%，
 提升 +0.0pp）。复核发现 v1 存在子串解析脆弱、异常默认映射、低门槛诱导措辞等 6 项实现 bug
-（详见 `eval/results_live/eval_results_after_baseline_fix.md` 与
+（历史复核详见 `eval/results_live/eval_results_after_baseline_fix.md` 与
 [eval/results/baseline_audit.jsonl](eval/results/baseline_audit.jsonl) 逐案审计）；仅修复
 eval/baseline* 的客观错误后重跑（主系统代码/权重/标签/评测集零改动），得到上表有效结果。
-修复前原始结果保留于 `eval/results_live/eval_results_before_baseline_fix.{json,md}`。
+修复前原始结果保留于 `eval/results_live/eval_results_before_baseline_fix.{json,md}`；这些文件是
+历史审计证据，不再作为当前正式成绩。
 
 ### 未达标项（如实披露）
 
@@ -90,7 +106,7 @@ eval/baseline* 的客观错误后重跑（主系统代码/权重/标签/评测�
 三单 PDF ──► 护栏（注入检测/敏感数据拒绝/工具白名单）
         ──► 解析（PyMuPDF 提取，正则优先、LLM 补充，字段级证据：页码/原文/坐标）
         ──► 三单核验（主体规范化/金额勾稽/账期/跨案件租赁物查重）
-        ──► 77 号文规则引擎（config/rules_77.yaml，R77-001~005）
+        ──► 贸易真实性与账期规则库（含银发〔2025〕77号场景化规则，R77-001~005）
         ──► GPU 残值与压力测试（分代折旧 + 利用率 -20%/单客户违约情景）
         ──► 利用率预警（绿/黄/红，"T-N 天预警"）
         ──► 风险评分 0–100（显式权重 + 分项贡献 + 红线兜底）
@@ -195,8 +211,10 @@ GF-2025-2616 数据委托处理服务合同，空白条款全部填入合成"示
 命中）；合同填写值【】括号容忍；通用同义标签表；金额取文中最大货币候选值策略；OCR 逐页
 缓存与字段级置信度路由（<0.80 转人工）。
 
-**无回归证明**：v2 全部改动后 `pytest -q tests/` 53 绿、`run_eval --mock` 9/9 达标、
-v1 口径复跑与原结果逐字段完全一致（证明附于 v2 报告末节）。
+**历史无回归记录**：v2 全部改动后 `pytest -q tests/` 53 绿；当时评测实现记录为
+`run_eval --mock` 9/9，且 v1 口径复跑与原结果逐字段一致（证明附于 v2 报告末节）。该 9/9
+因后续发现 EVAL-01 前视泄漏已不再作为当前成绩；当前成绩统一以本页 2026-08-22 修正主表的
+7/9 达标为准。
 
 ### v2 后续改进：字段级交叉校验（v3，2026-08-13）
 
@@ -218,8 +236,9 @@ v3 为金额与期限两个高风险字段增加"自我证伪"能力
   拦截（假阳·规则边界，风电 15 年租期真实存在，人审可放行）；
 - **集成**：validation 阶段挂在解析层之后（`stage_validate`），标记进入 pipeline state、
   SQLite 审计日志（原始值掩码）与 Streamlit 人审路由面板（显示原因码）；
-- **无回归**：pytest 116 绿（+63 项新测）、mock 9/9 不变（合成集 0 误伤）、
-  v1 口径复跑逐字段一致；v2→v3 仅 2 处字段状态变化（即上述两例）。
+- **历史无回归记录**：该阶段共收集 116 项 pytest（当前环境实跑 115 passed、1 skipped），
+  v1 口径复跑逐字段一致；v2→v3 仅 2 处字段状态变化（即上述两例）。当时记录的 mock 9/9
+  已被 EVAL-01 修正口径取代，当前成绩为 7/9。
 
 ### 数电票票样归因修正 + 发票版式首次有效测量（v4，2026-08-13）
 
@@ -244,14 +263,15 @@ v3 为金额与期限两个高风险字段增加"自我证伪"能力
   含替代样本 29/34（85.3%）；既有 5 样本逐字段结果与 v3 完全一致（无回归）；
 - **通用改进**（非样本特例）：税额抽取新增"发票合计行双数值取第二值"通用回退模式；
   run_external 支持 `--stem/--title/--preamble-file`（归因修正报告可复跑）；
-- **无回归**：pytest 116 绿、mock 全量评测 9/9 达标不变。
+- **无回归**：共收集 116 项 pytest（当前环境实跑 115 passed、1 skipped），既有 5 个外部样本逐字段结果与 v3 一致；该阶段曾记录的 mock
+  9/9 属 EVAL-01 修正前口径，当前统一以 v5 修正后的 7/9 为准。
 
 ## 文档与脚本
 
 ### v5 变更记录（2026-08-22）
 
 - EVAL-01：取消隐式加载全量标签，评测按时间序仅用前案系统输出构建登记上下文；修正后召回
-  83.33%、规则准确率 95.00%、mock/live-basis 提升分别为 +50.0pp/+46.7pp。
+  83.33%、规则准确率 95.00%、mock/2026-08-23 正式 live 提升均为 +50.0pp。
 - VAL-01：`severity=review` 的字段级交叉校验标记进入评分路由，风险分只抬升下限、不压低真实拒绝案。
 - AMT-01：支持 `【100】万元`、`【1.5】亿元` 与方括号包裹的阿拉伯金额。
 - REG-01：按银发〔2025〕77号第十至十三条修正规则引用，R77-004 明确为内部演示阈值。
@@ -265,6 +285,6 @@ v3 为金额与期限两个高风险字段增加"自我证伪"能力
 ## 测试
 
 ```bash
-python -m pytest -q tests/    # 50 passed
+python -m pytest -q tests/    # 115 passed, 1 skipped
 ```
 
