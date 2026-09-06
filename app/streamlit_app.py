@@ -200,7 +200,8 @@ def panel_rules(state: PipelineState) -> None:
 
 
 def panel_stress(state: PipelineState) -> None:
-    st.subheader("④ 残值曲线与压力测试")
+    st.subheader("④ 示意性压力测试计算器")
+    st.warning("当前租金计划以合同总额近似，残值与剩余本金共用折旧曲线；LTV/DSCR 仅演示压力传导，不构成定价、估值、授信或偿债能力判断。")
     if not state.stress:
         st.info("无压力测试结果")
         return
@@ -212,7 +213,7 @@ def panel_stress(state: PipelineState) -> None:
         for sc in s.scenarios
     ])
     st.dataframe(df, width="stretch", hide_index=True)
-    st.caption(f"GPU 型号：{s.gpu_model} ｜ 回本周期：{s.payback_months} 个月 ｜ 参数为公开案例校准假设值")
+    st.caption(f"GPU 型号：{s.gpu_model} ｜ 示意回本周期：{s.payback_months} 个月 ｜ 未经真实租金计划、债务偿付表或处置样本校准")
 
 
 def panel_alerts(state: PipelineState) -> None:
