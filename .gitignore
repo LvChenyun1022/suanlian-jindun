@@ -10,6 +10,7 @@ data/*
 _eval_context_seen.jsonl
 .pytest_cache/
 .pytest-local/
+.pytest-*/
 .streamlit/
 
 # live 评测本地明细（只提交汇总 JSON/Markdown 与 RUN_METADATA.md）
