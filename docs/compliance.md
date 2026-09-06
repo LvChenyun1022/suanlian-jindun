@@ -10,34 +10,34 @@
 | 监管要求（转译） | 产品功能 | 实现位置 | 验证证据 |
 |---|---|---|---|
 | 高风险场景不得由 AI 自动放行，必须人工介入 | 风险评分 0–100 三段路由：**<60 建议通过 / 60–90 强制"待人工复核"（系统不得自动放行）/ >90 建议拒绝并给出理由** | `src/scoring/`、`config/scoring.yaml`（显式权重 + 红线兜底：high 规则命中总分 ≥60 强制人审，block 命中 ≥91 建议拒绝） | Demo 人审面板（60–90 分案件必须点击"人工复核：通过/拒绝"才结案）；`pytest tests/test_scoring*` |
-| 人工操作必须留痕、可审计 | 人审按钮点击以 `manual_op` 事件写入 SQLite 哈希链审计日志（操作人/动作/理由/时间） | `app/streamlit_app.py`、`src/audit/sqlite_store.py` | 审计时间线页面；审计包 zip 内含 `manual_op` 记录 |
+| 人工操作必须留痕、可审计 | 当前只记录通过/驳回动作文本与时间；操作者身份、角色、理由、证据引用、双人复核和权限隔离尚未实现 | `app/streamlit_app.py`、`src/audit/sqlite_store.py` | 当前原型仅证明复核路由；机构部署前须补齐治理字段与权限控制 |
 | 高风险场景的**字段级**工程化：可疑字段值不得静默进入评分/规则，须先经人工确认 | **字段级交叉校验 + 人审路由**：金额大写/小写不一致（`amount_mismatch_daxie`）、期限越界/多值冲突（`term_out_of_bounds`/`term_inconsistent`）→ 字段置信度置 0 并转人审（与 ocr_low_confidence 同路由），绝不静默替换值 | `src/validation/field_validation.py`、`src/parsing/chinese_amount.py`、`src/pipeline.py`（`stage_validate`） | v3 实测：contract_C 期限"44 vs 144"OCR 冲突被拦截转人审（真阳）；`pytest tests/test_field_validation*`、eval/results/external_validity_v3.md |
 
-## 2. 日志保存 → SQLite 不可变哈希链审计日志
+## 2. 日志保存 → SQLite 应用层哈希链
 
 | 监管要求（转译） | 产品功能 | 实现位置 | 验证证据 |
 |---|---|---|---|
-| 关键操作与模型调用日志应完整保存、防篡改、可追溯 | SQLite **append-only** 审计库：UPDATE/DELETE 由触发器禁止；每条记录含 `prev_hash` 形成防篡改链；记录工具调用、LLM 调用（输入/输出摘要 + token 数）、护栏拦截、人工操作 | `src/audit/sqlite_store.py` | 篡改自检（改一条记录即全链校验失败）；`pytest tests/test_audit*` |
-| 日志可按案件维度调取 | 按案件导出 JSONL + "审计包" zip（输入文件清单、各环节输出 JSON、审计日志、报告文件） | `src/report/report.py`（`export_audit_pack`） | Demo"导出审计包"按钮；解压核对文件齐全 |
+| 关键操作日志应保存、可追溯 | SQLite append-only 审计库以 `prev_hash` 连接已纳入哈希的日志字段；不含可信时间戳、逐项文件签名或物理不可变存储 | `src/audit/sqlite_store.py` | 仅支持应用层篡改检测；不构成区块链存证或法律证据效力 |
+| 日志可按案件维度调取 | 按案件导出 JSONL + 审计包 zip；当前导出时序和文件哈希清单仍待完善 | `src/report/report.py`（`export_audit_pack`） | Demo 可下载；在完整性增强前不声称覆盖报告生成后的全部事件 |
 | 算法留痕可解释 | 每条结论可追溯到单据字段级证据（字段名/页码/原文片段/坐标） | `src/parsing/`（FieldEvidence）、`src/report/` | 证据链覆盖率 100%（928/928 条结论，eval/results，2026-08-22 修正口径重跑） |
 
 ## 3. 五类智能体风险 → 护栏与对抗测试
 
 | 风险类别 | 产品功能（护栏模块） | 实现位置 | 对抗测试（eval/adversarial/，24 例） |
 |---|---|---|---|
-| **提示词注入 / 数据泄露** | ①中英文提示词注入模式库检测（Pipeline 第一环节），可选 LLM 二次判定；②对**用户输入/外部文本**做身份证/银行卡正则检测 → 直接拒绝处理（合成单据内均为掩码，不误拦） | `src/guardrails/checks.py`（`INJECTION_PATTERNS` / `SENSITIVE_PATTERNS` / `check_user_text`） | `prompt_injection` ×11、`sensitive_data` ×6，全部 expect=block |
+| **提示词注入 / 数据泄露** | 当前检测中英文注入模式、身份证号和银行卡号；尚未完整覆盖姓名、手机号、地址、税号、合同关键条款、上传前内存检测与保存期限 | `src/guardrails/checks.py` | 固定合成回归集覆盖已知模式，不代表完整敏感实体识别 |
 | **记忆污染** | 无跨案件长期记忆：每次运行独立 `PipelineState`，无在线学习、无样本回流；评测集只读；合成单据每页带"程序合成虚构数据"标识防止误当真实样本 | `src/pipeline.py`、`src/schemas.py` | 设计性消解（无记忆面），由状态隔离测试覆盖 |
 | **身份越权** | 不代理任何真实主体身份；工具调用须显式注册，未注册身份/工具一律拒绝并留痕 | `src/guardrails/tools.py`（`ToolRegistry`） | `tool_abuse` 用例中的越权身份调用全部拦截 |
 | **工具滥用** | 工具白名单注册表：白名单外调用拒绝 + 审计留痕；评测中注册表初始为空白名单（仅 1 个合法对照工具） | `src/guardrails/tools.py` | `tool_abuse` ×5，全部 expect=block |
 | **运行失控** | ①结构化异常 + mock 模式全链回退（无 Key/超时/解析失败不崩溃）；②核心 pipeline 时耗上限（正式 live 均值 0.157s、最大 0.267s，不等于生产周转时间）；③评分红线兜底（block 命中将分数下限抬升至 91，仅给出建议拒绝提示）；④60–90 分强制人审，所有区间均由人最终决定 | `src/pipeline.py`、`config/scoring.yaml` | 核心 pipeline 时耗指标 + 评分路由测试 |
 
-**对抗测试结果：拦截率 100%（22/22 应拦截用例全部拦截，2 个正常对照用例无误伤）**——
+**固定安全回归集：22/22 合成应拦截用例被阻断，2 个合成正常对照无误伤。**该结果仅覆盖已知模式，不外推为普遍安全能力——
 见 [eval/results/eval_results.md](../eval/results/eval_results.md) 与 `eval/adversarial/run.py`。
 
 ## 4. 贸易真实性与账期规则库（含银发〔2025〕77号场景化规则）
 
 > 规则以 `config/rules_77.yaml` 声明式定义、Python 执行器（`src/rules/engine.py`）解释执行；
-> 每条命中输出规则编号 + 条款引用 + 字段级证据。规则命中准确率 95.00%（eval/results，
+> 每条命中输出规则编号 + 条款引用 + 字段级证据。案件级预期规则集合完全匹配率 95.00%（eval/results，
 > 2026-08-22 修正口径重跑）；未命中来自重复质押每对案件首次出现时尚无既往登记历史。
 >
 > **适用范围声明**：银发〔2025〕77号第十至十三条直接规范的是**应收账款电子凭证**。
