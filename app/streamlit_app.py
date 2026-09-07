@@ -325,6 +325,113 @@ def panel_report(state: PipelineState) -> None:
 
 # ---------------- 主流程 ----------------
 
+# ---------------- 原始单据预览 ----------------
+
+def _evidence_boxes(state: PipelineState) -> dict[str, list]:
+    """按单据类型汇总核验与规则命中的字段级证据，并去除重复定位。"""
+    boxes: dict[str, list] = {doc_type: [] for doc_type in DOC_LABELS}
+    seen: dict[str, set[tuple]] = {doc_type: set() for doc_type in DOC_LABELS}
+
+    def _collect(evidences) -> None:
+        for evidence in evidences or []:
+            bbox = getattr(evidence, "bbox", None)
+            doc_type = getattr(getattr(evidence, "doc_type", None), "value", None)
+            if bbox is None or doc_type not in boxes:
+                continue
+            key = (
+                evidence.page,
+                round(bbox.x0, 2),
+                round(bbox.y0, 2),
+                round(bbox.x1, 2),
+                round(bbox.y1, 2),
+                evidence.field_name,
+            )
+            if key not in seen[doc_type]:
+                seen[doc_type].add(key)
+                boxes[doc_type].append(evidence)
+
+    if state.verification:
+        for check in state.verification.checks:
+            _collect(check.evidences)
+    for hit in state.rule_hits or []:
+        _collect(hit.evidences)
+    return boxes
+
+
+def _render_doc_image(
+    pdf_path: Path,
+    evidences,
+    page_number: int = 1,
+    zoom: float = 1.5,
+) -> bytes:
+    """将指定 PDF 页渲染为 PNG，并在字段级证据位置叠加红框。"""
+    import pymupdf
+
+    with pymupdf.open(str(pdf_path)) as doc:
+        if not 1 <= page_number <= doc.page_count:
+            raise ValueError(f"页码 {page_number} 超出 PDF 范围（共 {doc.page_count} 页）")
+        page = doc[page_number - 1]
+        page_height = page.rect.height
+        for evidence in evidences:
+            if evidence.page != page_number or evidence.bbox is None:
+                continue
+            # 项目 BBox 统一为 PDF 左下原点；PyMuPDF 页面坐标采用左上原点。
+            rect = pymupdf.Rect(
+                evidence.bbox.x0 - 2,
+                page_height - evidence.bbox.y1 - 2,
+                evidence.bbox.x1 + 2,
+                page_height - evidence.bbox.y0 + 2,
+            ) & page.rect
+            if not rect.is_empty:
+                page.draw_rect(rect, color=(0.9, 0.12, 0.12), width=1.8, overlay=True)
+        pixmap = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom), alpha=False)
+        return pixmap.tobytes("png")
+
+
+def panel_documents(state: PipelineState) -> None:
+    """在结果顶部按三类单据展示 PDF 原文及字段级证据定位。"""
+    import pymupdf
+
+    st.subheader("⓪ 原始单据 PDF（红框 = 字段级证据定位）")
+    base_dir = Path(st.session_state.get("base_dir", CASES_ROOT))
+    boxes = _evidence_boxes(state)
+    tabs = st.tabs(list(DOC_LABELS.values()))
+    for tab, doc_type in zip(tabs, DOC_LABELS):
+        with tab:
+            pdf_path = base_dir / state.case_id / f"{doc_type}.pdf"
+            if not pdf_path.exists():
+                st.info("未找到该单据文件")
+                continue
+            try:
+                with pymupdf.open(str(pdf_path)) as doc:
+                    page_count = doc.page_count
+                evidence_count = len(boxes[doc_type])
+                st.caption(
+                    f"{pdf_path.name} · 共 {page_count} 页 · 字段级证据定位 {evidence_count} 处"
+                )
+                page_number = 1
+                if page_count > 1:
+                    page_number = st.selectbox(
+                        "预览页码",
+                        range(1, page_count + 1),
+                        format_func=lambda page: f"第 {page} 页",
+                        key=f"document_page_{state.case_id}_{doc_type}",
+                    )
+                st.image(
+                    _render_doc_image(pdf_path, boxes[doc_type], page_number),
+                    width="stretch",
+                )
+                st.download_button(
+                    "下载原始 PDF",
+                    data=pdf_path.read_bytes(),
+                    file_name=pdf_path.name,
+                    mime="application/pdf",
+                    key=f"document_download_{state.case_id}_{doc_type}",
+                )
+            except (ValueError, RuntimeError, pymupdf.FileDataError) as exc:
+                st.error(f"无法预览该 PDF：{exc}")
+
+
 def main() -> None:
     st.title("算链金盾 · 算力融资租赁智能风控 Demo")
     st.caption(AI_OUTPUT_BANNER)
@@ -334,6 +441,8 @@ def main() -> None:
         st.info("请在左侧选择案件（或上传三件套）并点击「运行 Pipeline」。")
     else:
         st.markdown(f"### 案件 {state.case_id}（{state.run_mode} 模式）")
+        panel_documents(state)
+        st.divider()
         panel_stages(state)
         st.divider()
         col_l, col_r = st.columns(2)
@@ -352,4 +461,5 @@ def main() -> None:
     st.caption("本系统输出为 AI 辅助意见，不构成授信或投资建议；演示数据均为合成数据。")
 
 
-main()
+if __name__ == "__main__":
+    main()
