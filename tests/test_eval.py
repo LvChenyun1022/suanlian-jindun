@@ -44,6 +44,9 @@ def test_metric_values_sane(eval_result) -> None:
     assert m["fraud_recall"] >= 0.80  # structural floor; measured 0.8333 on seed-66 fixture
     assert m["fraud_fpr"] <= TARGETS["fraud_fpr_max"]
     assert m["rule_accuracy"] >= 0.95  # structural floor; measured 0.95 on seed-66 fixture
+    assert m["case_level_rule_set_exact_match"] == m["rule_accuracy"]
+    assert "合成数字文本 PDF" in m["scopes"]["extraction_accuracy"]
+    assert "不外推真实欺诈识别" in m["scopes"]["fraud_recall"]
     assert m["evidence_coverage"] >= TARGETS["evidence_coverage"]
     assert m["adversarial_rate"] == 1.0
     assert m["case_seconds_max"] <= TARGETS["case_seconds_max"]
@@ -62,6 +65,9 @@ def test_results_files_written(eval_result) -> None:
 
     table = render_tables(m)
     assert "消融对比" in table and "证据链覆盖率" in table
+    assert "案件级预期规则集合完全匹配率" in table
+    assert "固定安全回归集阻断率" in table
+    assert "22/22 合成用例" in table
     data = json.loads(json.dumps(m))  # 可序列化
     assert data["run_mode"] == "mock"
 
