@@ -84,7 +84,7 @@ class SqliteAuditStore:
         }
         record_hash = sha256_hex(self._prev + canonical(payload))
         self._conn.execute(
-            f"INSERT INTO audit_log ({', '.join(_COLS)}, prev_hash, record_hash)"
+            f"INSERT INTO audit_log ({', '.join(_COLS)}, prev_hash, record_hash)"  # nosec B608 -- identifiers are fixed above; values are parameterized
             f" VALUES ({', '.join('?' * len(_COLS))}, ?, ?)",
             (
                 datetime.now(timezone.utc).isoformat(),
@@ -102,7 +102,7 @@ class SqliteAuditStore:
         """整链校验：prev_hash 衔接 + record_hash 重算一致。"""
         prev = GENESIS_HASH
         rows = self._conn.execute(
-            f"SELECT seq, {', '.join(_COLS[1:])}, prev_hash, record_hash"
+            f"SELECT seq, {', '.join(_COLS[1:])}, prev_hash, record_hash"  # nosec B608 -- identifiers are fixed above; no external input
             " FROM audit_log ORDER BY seq"
         )
         for row in rows:
