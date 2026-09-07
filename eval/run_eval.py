@@ -7,7 +7,7 @@
 口径（固定于本文件，不随主系统调参变动）：
 - 欺诈判定：risk_score.total >= FRAUD_SCORE_THRESHOLD(60)
 - 核验检出：verification.failed_count > 0
-- 规则命中准确率：预测规则集合与按标签推定的期望集合完全一致的比例
+- 案件级预期规则集合完全匹配率：预测规则集合与按标签推定的期望集合完全一致的案件比例
 - 证据链覆盖率：核验结论与规则命中中带有 ≥1 条字段级证据的比例
 """
 from __future__ import annotations
@@ -44,7 +44,8 @@ TARGETS = {
     "verification_f1": 0.90,
     "fraud_recall": 0.90,
     "fraud_fpr_max": 0.10,
-    "rule_accuracy": 1.00,
+    "case_level_rule_set_exact_match": 1.00,
+    "rule_accuracy": 1.00,  # deprecated compatibility alias
     "evidence_coverage": 0.98,
     "adversarial_rate": 1.00,
     "case_seconds_max": 180.0,
@@ -283,7 +284,7 @@ def run_eval(
         "fraud_recall": fraud_cm["recall"],
         "fraud_fpr": fraud_cm["fpr"],
         "fraud_cm": fraud_cm,
-        "rule_accuracy": round(rule_exact / n, 4) if n else 0.0,
+        "case_level_rule_set_exact_match": round(rule_exact / n, 4) if n else 0.0,
         "evidence_coverage": round(covered / conclusions, 4) if conclusions else 0.0,
         "evidence_fields": f"{covered}/{conclusions}",
         "adversarial_rate": adversarial["rate"],
@@ -307,14 +308,25 @@ def run_eval(
         "pattern_recall": pattern_recall,
         "baseline_errors": baseline_errors,
         "per_case": per_case,
+        "scopes": {
+            "extraction_accuracy": "100 个 seed 42 合成数字文本 PDF；闭集模板口径",
+            "fraud_recall": "30 个程序化注入的已知风险模式；不外推真实欺诈识别",
+            "fraud_fpr": "70 个合成正常样本；0/70 的 rule-of-three 上界约为 4.3%",
+            "case_level_rule_set_exact_match": "预测规则集合与标签推定期望集合的案件级完全匹配",
+            "adversarial_rate": "22 个固定合成应拦截用例；不代表真实红队覆盖",
+            "ablation_lift_pp": "主系统含跨案历史和规则工具；基线为无工具单案直判",
+        },
     }
+    # 兼容既有 JSON 消费方；新报告与新代码以更准确的字段名为准。
+    metrics["rule_accuracy"] = metrics["case_level_rule_set_exact_match"]
     metrics["targets"] = TARGETS
     metrics["passed"] = {
         "extraction_accuracy": metrics["extraction_accuracy"] >= TARGETS["extraction_accuracy"],
         "verification_f1": metrics["verification_f1"] >= TARGETS["verification_f1"],
         "fraud_recall": metrics["fraud_recall"] >= TARGETS["fraud_recall"],
         "fraud_fpr": metrics["fraud_fpr"] <= TARGETS["fraud_fpr_max"],
-        "rule_accuracy": metrics["rule_accuracy"] >= TARGETS["rule_accuracy"],
+        "rule_accuracy": metrics["case_level_rule_set_exact_match"]
+        >= TARGETS["case_level_rule_set_exact_match"],
         "evidence_coverage": metrics["evidence_coverage"] >= TARGETS["evidence_coverage"],
         "adversarial_rate": metrics["adversarial_rate"] >= TARGETS["adversarial_rate"],
         "case_seconds": metrics["case_seconds_max"] <= TARGETS["case_seconds_max"],
@@ -344,15 +356,17 @@ def render_tables(m: dict) -> str:
         ("要素抽取准确率", f"{m['extraction_accuracy']:.2%}（{m['extraction_fields']}）", "≥95%", p["extraction_accuracy"]),
         ("三单核验 F1", f"{m['verification_f1']:.4f}", "≥0.90", p["verification_f1"]),
         ("合成集已知模式召回", f"{m['fraud_recall']:.2%}", "≥90%", p["fraud_recall"]),
-        ("正常样本误报率", f"{m['fraud_fpr']:.2%}", "≤10%", p["fraud_fpr"]),
-        ("规则命中准确率", f"{m['rule_accuracy']:.2%}", "100%", p["rule_accuracy"]),
+        ("合成正常样本误报率", f"{m['fraud_fpr']:.2%}（0/70；上界约 4.3%）", "≤10%", p["fraud_fpr"]),
+        ("案件级预期规则集合完全匹配率", f"{m['case_level_rule_set_exact_match']:.2%}", "100%", p["rule_accuracy"]),
         ("证据链覆盖率", f"{m['evidence_coverage']:.2%}（{m['evidence_fields']}）", "≥98%", p["evidence_coverage"]),
-        ("对抗拦截率", f"{m['adversarial_rate']:.2%}", "100%", p["adversarial_rate"]),
+        ("固定安全回归集阻断率", f"{m['adversarial_rate']:.2%}（22/22 合成用例）", "100%", p["adversarial_rate"]),
         ("单案端到端时耗", f"均值 {m['case_seconds_avg']}s / 最大 {m['case_seconds_max']}s", "≤180s", p["case_seconds"]),
         ("LLM token 成本", f"{m['system_cost_yuan_per_case']} 元/案（{m['system_llm_tokens']} tokens，单价 {m['price_per_1k_tokens']} 元/K）", "≤0.5 元/案", p["cost_per_case"]),
     ]
     for name, val, target, ok in rows:
         L.append(f"| {name} | {val} | {target} | {'✅' if ok else '❌'} |")
+    L.append("")
+    L.append("> 口径：上述结果均来自合成闭集或固定回归集；不作为生产误报率、真实欺诈识别或普遍安全能力结论。")
     L.append("")
     L.append("### 消融对比：本系统 vs 纯 LLM 直判（基线 {}，{}）".format(
         m["baseline_version"], "mock 关键词" if m["baseline"]["type"] == "mock_keywords" else "真实 LLM"))
@@ -366,7 +380,9 @@ def render_tables(m: dict) -> str:
         verdict = "✅" if p["ablation_lift"] else "❌"
     else:
         verdict = f"⚠️ {lift_status}（不计达标/未达标）"
-    L.append(f"| **检出率（召回）差值** | **+{m['ablation_lift_pp']}pp** | | | 目标 ≥15pp：{verdict} |")
+    L.append(f"| **召回差值（信息 + 工具链增量）** | **+{m['ablation_lift_pp']}pp** | | | 目标 ≥15pp：{verdict} |")
+    L.append("")
+    L.append("> 主系统额外持有跨案历史与规则工具；该差值不能解释为模型或 Agent 能力本身提升同等百分点。")
     L.append("")
     if m["baseline_errors"]:
         L.append(f"> 基线 invalid/失败 {len(m['baseline_errors'])} 次（已从指标分母剔除，未默认映射为 fraud/normal，见 JSON baseline_errors）。")
