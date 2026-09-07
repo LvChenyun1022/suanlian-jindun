@@ -1,7 +1,7 @@
-"""GPU 分代残值模型 + 三档压力情景。
+"""GPU 示意性压力测试计算器 + 三档情景。
 
 - 残值曲线：年度锚点（config/asset.yaml，公开案例校准假设值）年内线性插值，48 个月加速折旧；
-- DSCR = 租金回收现金流 / 融资本金；LTV = 剩余本金 / 租赁物残值；
+- 当前以合同总额近似租金计划，且本金与残值共用折旧曲线；输出不是经验证的 DSCR/LTV；
 - 压力情景：stress = 利用率 -20%（回收率同步 -20%）；extreme = 单一客户违约（按集中度加权，
   回收 = 已收租金 + 违约时点残值 × (1 - 处置折扣)）。
 """
@@ -55,7 +55,7 @@ def run_stress_test(
     lease: LeaseItemEssentials,
     config: dict | None = None,
 ) -> ResidualStressResult:
-    """对 GPU 租赁物执行残值与现金流压力测试。"""
+    """运行示意性压力测试；结果不得用于定价、估值、授信或偿债判断。"""
     cfg = config or load_asset_config()
     gpu_model = lease.items[0].model if lease.items else "unknown"
     curve = depreciation_curve(gpu_model, cfg)
