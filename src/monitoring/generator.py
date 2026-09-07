@@ -20,7 +20,7 @@ def load_monitoring_config(path: str | Path | None = None) -> dict:
 
 def _profile_for(case_id: str) -> str:
     """哈希分桶：~10% idle（长期闲置）、~8% drop（中段骤降），其余 normal。"""
-    bucket = int(hashlib.md5(case_id.encode()).hexdigest(), 16) % 100
+    bucket = int(hashlib.md5(case_id.encode(), usedforsecurity=False).hexdigest(), 16) % 100
     if bucket < 10:
         return "idle"
     if bucket < 18:
@@ -31,7 +31,9 @@ def _profile_for(case_id: str) -> str:
 def generate_series(case_id: str, days: int = 180, profile: str | None = None) -> list[float]:
     """生成日级利用率序列 [0,1]，含趋势项与突变噪声；同 case_id 结果可复现。"""
     profile = profile or _profile_for(case_id)
-    rng = random.Random(int(hashlib.md5(f"telemetry:{case_id}".encode()).hexdigest(), 16))
+    rng = random.Random(
+        int(hashlib.md5(f"telemetry:{case_id}".encode(), usedforsecurity=False).hexdigest(), 16)
+    )
     series: list[float] = []
     drift = rng.uniform(-0.0005, 0.0005)          # 缓慢趋势
     base = {"normal": rng.uniform(0.65, 0.85), "idle": rng.uniform(0.02, 0.06),
