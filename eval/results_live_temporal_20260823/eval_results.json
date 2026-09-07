@@ -37,6 +37,7 @@
     "fn": 5,
     "tn": 70
   },
+  "case_level_rule_set_exact_match": 0.95,
   "rule_accuracy": 0.95,
   "evidence_coverage": 1.0,
   "evidence_fields": "928/928",
@@ -1147,6 +1148,7 @@
     "verification_f1": 0.9,
     "fraud_recall": 0.9,
     "fraud_fpr_max": 0.1,
+    "case_level_rule_set_exact_match": 1.0,
     "rule_accuracy": 1.0,
     "evidence_coverage": 0.98,
     "adversarial_rate": 1.0,
