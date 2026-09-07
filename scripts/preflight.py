@@ -198,21 +198,24 @@ def run_demo_sequence(labels: list[dict]) -> None:
 
 
 def run_tests() -> None:
-    completed = subprocess.run(
-        [
-            sys.executable,
-            "-X",
-            "utf8",
-            "-m",
-            "pytest",
-            "-q",
-            "tests",
-            "--basetemp",
-            ".pytest-local",
-        ],
-        cwd=ROOT,
-        check=False,
-    )
+    # Use an isolated directory so concurrent/local prior runs cannot corrupt
+    # pytest's shared basetemp and produce misleading filesystem failures.
+    with tempfile.TemporaryDirectory(prefix="suanlian-pytest-") as temp_dir:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "-X",
+                "utf8",
+                "-m",
+                "pytest",
+                "-q",
+                "tests",
+                "--basetemp",
+                temp_dir,
+            ],
+            cwd=ROOT,
+            check=False,
+        )
     require(completed.returncode == 0, "pytest 回归测试通过")
 
 
