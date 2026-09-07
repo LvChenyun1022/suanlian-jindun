@@ -62,7 +62,9 @@ def render_markdown(state: PipelineState) -> str:
         L.append("## 规则命中\n\n无。\n")
 
     if state.stress:
-        L.append(f"## 残值与现金流压力测试（{state.stress.gpu_model}）")
+        L.append(f"## 示意性压力测试计算器（{state.stress.gpu_model}）")
+        L.append("")
+        L.append("> **口径限制：**当前租金计划以合同总额近似，残值与剩余本金共用折旧曲线；LTV/DSCR 仅演示压力传导，不构成定价、估值、授信或偿债能力判断。")
         L.append("")
         L.append("| 情景 | 残值率 | LTV | DSCR | 突破阈值 | 说明 |")
         L.append("|---|---|---|---|---|---|")
