@@ -100,7 +100,13 @@ def stage_guardrail_in(state: PipelineState, rt: PipelineRuntime) -> PipelineSta
 
 
 def stage_parse(state: PipelineState, rt: PipelineRuntime) -> PipelineState:
-    c, i, l, ev = parse_case(state.files, rt.base_dir, rt.settings)
+    c, i, l, ev = parse_case(
+        state.files,
+        rt.base_dir,
+        rt.settings,
+        audit=rt.audit,
+        case_id=state.case_id,
+    )
     state.contract, state.invoice, state.lease_items, state.evidences = c, i, l, ev
     rt.audit.log("parsing", {"case_id": state.case_id},
                  {"fields": len(ev)}, case_id=state.case_id)
