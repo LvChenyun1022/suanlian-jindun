@@ -30,6 +30,7 @@ pip install -r requirements-lock.txt   # 推荐：复现当前已验证环境
 cp .env.example .env          # 填入真实 LLM_API_KEY/BASE_URL/MODEL；保持占位符时用 --mock 运行
 python -c "import src"        # 初始化自检：无输出即通过
 python -m src.datagen.generate --n 100 --out data/cases --seed 42   # 生成合成评测集（可复现）
+python scripts/make_live_demo_case.py                               # 生成 live 字段补抽演示案（不计入评测）
 python -m src.pipeline --case data/cases/case_0001 --mock           # 单案端到端（mock）
 streamlit run app/streamlit_app.py                                  # 本地 Demo（仅 localhost）
 python -X utf8 -m eval.run_eval --cases data/cases --mock           # 全量评测（mock，无需 Key）
