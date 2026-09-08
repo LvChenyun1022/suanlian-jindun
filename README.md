@@ -36,7 +36,7 @@ streamlit run app/streamlit_app.py                                  # 本地 Dem
 python -X utf8 -m eval.run_eval --cases data/cases --mock           # 全量评测（mock，无需 Key）
 python -X utf8 -m eval.run_eval --cases data/cases                  # 全量评测（live，需 Key）
 python -X utf8 -m eval.run_eval --cases data/cases --rerun-baseline-only  # 只重跑消融基线（缓存续跑）
-python -X utf8 -m pytest -q tests --basetemp .pytest-local          # 正式环境 115 passed, 1 skipped；无可选 langgraph 时 116 passed
+python -X utf8 -m pytest -q tests --basetemp .pytest-local          # 当前环境 118 passed, 1 skipped
 python -X utf8 scripts/preflight.py --all                           # 提交前：结果、Demo 序列、测试一次核验
 ```
 
@@ -151,7 +151,7 @@ src/       datagen · parsing · verification · rules · asset · monitoring
 app/       Streamlit Demo（localhost）
 eval/      run_eval（全指标）· baseline（消融基线）· rerun_baseline · adversarial · results*
 docs/      compliance（监管对照）· demo_script（路演脚本）· plan_draft（项目书骨架）· screenshots
-tests/     pytest（116 项；正式环境 115 passed、1 skipped；无可选 langgraph 时 116 passed）
+tests/     pytest（119 项；当前环境 118 passed、1 skipped）
 data/      合成评测集与运行产物（不入库）
 ```
 
@@ -311,6 +311,6 @@ v3 为金额与期限两个高风险字段增加"自我证伪"能力
 ## 测试
 
 ```bash
-python -m pytest -q tests/    # 115 passed, 1 skipped
+python -m pytest -q tests/    # 118 passed, 1 skipped
 ```
 
