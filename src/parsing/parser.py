@@ -131,12 +131,14 @@ class _DocParser:
         settings: LLMSettings,
         audit: AuditLogger | None,
         source_file: str | None = None,
+        case_id: str | None = None,
     ) -> None:
         self.reader = PdfTextReader(path)
         self.doc_type = doc_type
         self.settings = settings
         self.audit = audit
         self.source_file = source_file or Path(path).name
+        self.case_id = case_id
         self.evidences: list[FieldEvidence] = []
 
     def _evidence(self, hit: RawHit, field_name: str) -> FieldEvidence:
@@ -180,7 +182,15 @@ class _DocParser:
         if self.settings.mock_mode:
             return
         try:
-            filled = llm_fill(self.doc_type.value, self.reader.full_text(), missing_keys, self.settings)
+            filled = llm_fill(
+                self.doc_type.value,
+                self.reader.full_text(),
+                missing_keys,
+                self.settings,
+                audit=self.audit,
+                case_id=self.case_id,
+                source_file=self.source_file,
+            )
         except LLMError as e:
             if self.audit:
                 self.audit.log("parsing.llm_fallback", {"file": self.source_file}, e.to_log())
@@ -279,6 +289,7 @@ def parse_document(
     settings: LLMSettings | None = None,
     audit: AuditLogger | None = None,
     source_file: str | None = None,
+    case_id: str | None = None,
 ) -> tuple[object, list[FieldEvidence]]:
     """解析单份 PDF 为要素模型 + 字段级证据。
 
@@ -288,7 +299,7 @@ def parse_document(
     dt = DocType(doc_type)
     s = settings or load_settings()
     try:
-        parser = _DocParser(path, dt, s, audit, source_file)
+        parser = _DocParser(path, dt, s, audit, source_file, case_id)
     except Exception as e:
         err = ParseError(
             f"无法读取 PDF: {type(e).__name__}: {e}",
@@ -346,12 +357,20 @@ def parse_case(
     base_dir: str | Path = ".",
     settings: LLMSettings | None = None,
     audit: AuditLogger | None = None,
+    case_id: str | None = None,
 ) -> tuple[ContractEssentials, InvoiceEssentials, LeaseItemEssentials, list[FieldEvidence]]:
     """解析一个案件的三份单据。files: {"contract": rel, "invoice": rel, "lease_items": rel}。"""
     base = Path(base_dir)
     s = settings or load_settings()
-    contract, ev1 = parse_document(base / files["contract"], DocType.CONTRACT, s, audit, files["contract"])
-    invoice, ev2 = parse_document(base / files["invoice"], DocType.INVOICE, s, audit, files["invoice"])
-    lease, ev3 = parse_document(base / files["lease_items"], DocType.LEASE_ITEMS, s, audit, files["lease_items"])
+    resolved_case_id = case_id or Path(files["contract"]).parent.name or None
+    contract, ev1 = parse_document(
+        base / files["contract"], DocType.CONTRACT, s, audit, files["contract"], resolved_case_id
+    )
+    invoice, ev2 = parse_document(
+        base / files["invoice"], DocType.INVOICE, s, audit, files["invoice"], resolved_case_id
+    )
+    lease, ev3 = parse_document(
+        base / files["lease_items"], DocType.LEASE_ITEMS, s, audit, files["lease_items"], resolved_case_id
+    )
     return contract, invoice, lease, ev1 + ev2 + ev3  # type: ignore[return-value]
 
